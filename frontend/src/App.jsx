@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { LeadProvider } from "./context/LeadContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import ChangePassword from "./pages/ChangePassword";
@@ -16,99 +17,101 @@ import EmployeeManagement from "./pages/EmployeeManagement";
 const App = () => (
   <AuthProvider>
     <Router>
-      <Routes>
-        {/* Public */}
-        <Route path="/" element={<Login />} />
+      <LeadProvider>
+        <Routes>
+          {/* Public */}
+          <Route path="/" element={<Login />} />
 
-        {/* Admin protected */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/leads"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <LeadManagement />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/followups"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <FollowUpManagement />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/employees"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <EmployeeManagement />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/sitevisits"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <SiteVisitVerification />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/properties"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <PropertyManagement />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/reports/*"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <Reports />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/settings/*"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <Settings />
-            </ProtectedRoute>
-          }
-        />
+          {/* Admin protected */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/leads"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <LeadManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/followups"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <FollowUpManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/employees"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <EmployeeManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/sitevisits"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <SiteVisitVerification />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/properties"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <PropertyManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/reports/*"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Reports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/settings/*"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Employee protected */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute requiredRole="employee">
-              <EmployeeDashboard />
-            </ProtectedRoute>
-          }
-        />
+          {/* Employee protected */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute requiredRole="employee">
+                <EmployeeDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Both roles */}
-        <Route
-          path="/change-password"
-          element={
-            <ProtectedRoute>
-              <ChangePassword />
-            </ProtectedRoute>
-          }
-        />
+          {/* Both roles */}
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedRoute>
+                <ChangePassword />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Catch-all */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </LeadProvider>
     </Router>
   </AuthProvider>
 );
