@@ -44,6 +44,22 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    status: {
+      type: String,
+      enum: ["Active", "Inactive"],
+      default: "Active",
+    },
+    employeeId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    score: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
   },
   { timestamps: true }
 );

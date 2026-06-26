@@ -9,6 +9,7 @@ const leadRoutes = require("./routes/leadRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
 const followUpRoutes = require("./routes/followUpRoutes");
 const siteVisitRoutes = require("./routes/siteVisitRoutes");
+const roundRobinRoutes = require("./routes/roundrobin");
 const emailService = require("./services/emailService");
 
 dotenv.config();
@@ -51,6 +52,7 @@ if (process.env.GOOGLE_CLIENT_ID) {
 app.use("/api/auth", authRoutes);
 app.use("/api/leads", leadRoutes);
 app.use("/api/properties", propertyRoutes);
+app.use("/api/roundrobin", roundRobinRoutes);
 app.use("/api/followups", followUpRoutes);
 app.use("/api/sitevisits", siteVisitRoutes);
 
