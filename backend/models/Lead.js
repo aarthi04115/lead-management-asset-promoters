@@ -1,0 +1,64 @@
+const mongoose = require("mongoose");
+
+const leadSchema = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+            required: [true, "Customer name is required"],
+            trim: true,
+            index: true,
+        },
+        email: {
+            type: String,
+            required: [true, "Email is required"],
+            lowercase: true,
+            trim: true,
+            index: true,
+        },
+        phone: {
+            type: String,
+            required: [true, "Phone number is required"],
+            trim: true,
+            index: true,
+        },
+        property: {
+            type: String,
+            required: [true, "Property interest is required"],
+            trim: true,
+        },
+        source: {
+            type: String,
+            default: "Other",
+            trim: true,
+        },
+        status: {
+            type: String,
+            enum: ["New", "Attempted Call", "Connected", "Interested", "Site Visit", "Negotiation", "Booked", "Sold"],
+            default: "New",
+        },
+        assignedTo: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+        notes: {
+            type: String,
+            trim: true,
+        },
+        leadId: {
+            type: String,
+            unique: true,
+        }
+    },
+    { timestamps: true }
+);
+
+// Auto-generate leadId if not provided
+leadSchema.pre("save", function (next) {
+    if (!this.leadId) {
+        this.leadId = `LID-${Math.floor(1000 + Math.random() * 9000)}`;
+    }
+    next();
+});
+
+module.exports = mongoose.model("Lead", leadSchema);

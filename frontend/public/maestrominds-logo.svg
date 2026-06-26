@@ -1,0 +1,49 @@
+<svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="300" height="400" fill="#f5f1e8"/>
+  
+  <!-- Outer hand border -->
+  <g fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Wrist -->
+    <rect x="75" y="200" width="150" height="80" rx="10" ry="10"/>
+    
+    <!-- Thumb -->
+    <path d="M 75 220 Q 40 220 40 260 Q 40 290 75 290"/>
+    
+    <!-- Fingers -->
+    <!-- Pinky -->
+    <path d="M 95 200 L 90 80 Q 85 40 100 30 Q 110 25 115 40 L 120 200"/>
+    
+    <!-- Ring finger -->
+    <path d="M 130 200 L 125 60 Q 120 10 140 0 Q 155 -5 160 20 L 160 200"/>
+    
+    <!-- Middle finger -->
+    <path d="M 150 200 L 150 50 Q 150 0 170 -5 Q 185 -8 190 20 L 190 200"/>
+    
+    <!-- Index finger -->
+    <path d="M 170 200 L 175 70 Q 180 30 200 25 Q 215 20 220 45 L 220 200"/>
+    
+    <!-- Connecting palm curves -->
+    <path d="M 95 200 Q 95 195 100 195"/>
+    <path d="M 130 200 Q 130 195 135 195"/>
+    <path d="M 150 200 Q 150 195 155 195"/>
+  </g>
+  
+  <!-- M Letter inside hand - Left vertical line -->
+  <rect x="105" y="245" width="8" height="45" fill="#000" rx="2"/>
+  
+  <!-- M Letter - Left diagonal peak -->
+  <path d="M 113 245 L 125 260 L 125 245" fill="#000" stroke="#000" stroke-width="2" stroke-linejoin="round"/>
+  
+  <!-- M Letter - Right vertical line -->
+  <rect x="137" y="245" width="8" height="45" fill="#000" rx="2"/>
+  
+  <!-- M Letter - Inner vertical strokes -->
+  <line x1="121" y1="245" x2="121" y2="290" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+  <line x1="129" y1="260" x2="129" y2="290" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Text below -->
+  <text x="150" y="350" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#000">
+    MAESTROMINDS
+  </text>
+</svg>
