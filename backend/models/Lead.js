@@ -33,8 +33,13 @@ const leadSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["New", "Attempted Call", "Connected", "Interested", "Site Visit", "Negotiation", "Booked", "Sold"],
+            enum: ["New", "Attempted Call", "Connected", "Contacted", "Interested", "Follow-Up", "Site Visit Scheduled", "Site Visit Completed", "Negotiation", "Converted", "Closed", "Booked", "Sold", "Lost", "Site Visit"],
             default: "New",
+        },
+        campaign: {
+            type: String,
+            trim: true,
+            default: "",
         },
         assignedTo: {
             type: mongoose.Schema.Types.ObjectId,
