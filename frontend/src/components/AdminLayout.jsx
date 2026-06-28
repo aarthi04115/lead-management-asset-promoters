@@ -19,6 +19,7 @@ const NAV = [
 
     { id: "leads", label: "Lead Management", path: "/admin/leads", icon: Users, group: "crm" },
     { id: "properties", label: "Property Management", path: "/admin/properties", icon: Building2, group: "crm" },
+    { id: "followups", label: "Follow-Up Management", path: "/admin/followups", icon: Bell, group: "crm" },
     { id: "employees", label: "Employee Management", path: "/admin/employees", icon: UserCog, group: "crm" },
     { id: "sitevisits", label: "Site Visits", path: "/admin/sitevisits", icon: MapPin, group: "crm" },
 

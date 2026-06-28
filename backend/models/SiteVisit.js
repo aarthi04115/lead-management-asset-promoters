@@ -2,11 +2,22 @@ const mongoose = require("mongoose");
 
 const siteVisitSchema = new mongoose.Schema(
     {
+        employeeName: { type: String, trim: true }, // Added for source compatibility
         customerName: { type: String, required: true, trim: true },
-        property: { type: mongoose.Schema.Types.ObjectId, ref: "Property", required: true },
-        agent: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-        time: { type: Date, required: true },
-        status: { type: String, enum: ["Scheduled", "Pending", "Verified", "Cancelled"], default: "Scheduled" }
+        property: { type: mongoose.Schema.Types.ObjectId, ref: "Property" },
+        propertyName: { type: String, trim: true }, // Added for source compatibility
+        agent: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        latitude: { type: Number, required: true },
+        longitude: { type: Number, required: true },
+        selfieImage: { type: String, default: "default.jpg" },
+        distance: { type: Number, default: 0 },
+        remarks: { type: String, default: "" },
+        visitTime: { type: Date, default: Date.now },
+        status: {
+            type: String,
+            enum: ["Pending", "Approved", "Rejected", "Scheduled", "Verified", "Cancelled"],
+            default: "Pending"
+        }
     },
     { timestamps: true }
 );

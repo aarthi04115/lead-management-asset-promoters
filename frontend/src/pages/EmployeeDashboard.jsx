@@ -5,6 +5,7 @@ import Notification from "../components/Notification";
 import { useNotify } from "../hooks/useNotify";
 import { formatDate, formatDateTime } from "../utils/formatters";
 import api from "../api";
+import SiteVisitModal from "../components/admin/SiteVisitModal";
 
 
 const EmployeeDashboard = () => {
@@ -15,6 +16,7 @@ const EmployeeDashboard = () => {
   const [isFetching, setIsFetching] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [nameInput, setNameInput] = useState("");
+  const [showSiteVisitModal, setShowSiteVisitModal] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -85,7 +87,17 @@ const EmployeeDashboard = () => {
             </h1>
             <p className="dashboard-date">{todayLabel}</p>
           </div>
-          <span className="badge badge-employee">👤 Employee</span>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowSiteVisitModal(true)}
+              className="btn btn-primary flex items-center gap-2"
+              style={{ backgroundColor: '#0F172A', color: 'white', padding: '10px 20px', borderRadius: '12px', fontWeight: '700' }}
+            >
+              <span className="material-symbols-outlined">add_location</span>
+              Submit Site Visit
+            </button>
+            <span className="badge badge-employee">👤 Employee</span>
+          </div>
         </div>
 
         {/* Notification */}
@@ -185,6 +197,13 @@ const EmployeeDashboard = () => {
           </div>
         )}
       </main>
+
+      {showSiteVisitModal && (
+        <SiteVisitModal
+          onClose={() => setShowSiteVisitModal(false)}
+          onSuccess={() => notify("success", "Site visit submitted successfully!")}
+        />
+      )}
     </>
   );
 };
