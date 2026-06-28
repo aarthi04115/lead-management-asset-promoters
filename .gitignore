@@ -15,7 +15,18 @@ frontend/build/
 *.log
 npm-debug.log*
 
+
 # Editor
 .DS_Store
 .vscode/
 .idea/
+
+# Backups and temporary project zips
+FOLLOW UP-adminn/
+"Smart Real Estate CRM Dashboard"/
+"crm project (2)"/
+lms_extracted/
+luxecrm-admin-final/
+rr_backend/
+LMS_RES_SANT-01-.zip
+backend.zip
