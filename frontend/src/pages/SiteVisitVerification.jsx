@@ -50,19 +50,11 @@ const SiteVisitVerification = () => {
     return (
         <AdminLayout>
             <div className="max-w-[1440px] mx-auto p-lg">
-                {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-md">
                     <div>
                         <h2 className="text-3xl font-bold text-slate-900">Site Visit Verification</h2>
                         <p className="text-slate-500 text-lg">Prioritize and review high-value site tours scheduled for today.</p>
                     </div>
-                    <button
-                        onClick={() => setShowModal(true)}
-                        className="px-lg py-sm bg-slate-900 text-white font-bold rounded-lg flex items-center shadow-md hover:opacity-90"
-                    >
-                        <span className="material-symbols-outlined mr-2">add_circle</span>
-                        Add New Visit
-                    </button>
                 </div>
 
                 <Notification notification={notification} />

@@ -551,14 +551,6 @@ const FollowUpManagement = () => {
                             <h2>Follow-Up Management</h2>
                             <p>Oversee client interactions and maintain communication consistency.</p>
                         </div>
-                        <button
-                            onClick={openAddModal}
-                            className="btn-primary"
-                            type="button"
-                        >
-                            <CalendarDays size={18} />
-                            Schedule Follow-Up
-                        </button>
                     </div>
 
                     <div className="stats-grid">
