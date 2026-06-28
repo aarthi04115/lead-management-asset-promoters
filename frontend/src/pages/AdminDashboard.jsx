@@ -46,6 +46,16 @@ const leadSourceData = [
   { name: 'Referral', value: 15, color: '#94A3B8' },
 ];
 
+const leadSourceColors = {
+  "Website": "#0F172A",
+  "Google Ads": "#EAB308",
+  "Facebook": "#3B82F6",
+  "Referral": "#94A3B8",
+  "Zillow": "#F59E0B",
+  "Direct": "#10B981"
+};
+const leadColorPalette = ["#8B5CF6", "#EC4899", "#14B8A6", "#F43F5E", "#3B82F6"];
+
 const AdminDashboard = () => {
   const { user: currentAdmin } = useAuth();
   const { notification, notify } = useNotify();
@@ -56,6 +66,12 @@ const AdminDashboard = () => {
     totalFollowUps: 0, totalSiteVisits: 0, closedDeals: 0, availableProperties: 0
   });
   const [recentActivities, setRecentActivities] = useState([]);
+  const [leadSources, setLeadSources] = useState([
+    { name: 'Website', value: 40, color: '#0F172A' },
+    { name: 'Google Ads', value: 25, color: '#EAB308' },
+    { name: 'Facebook', value: 20, color: '#3B82F6' },
+    { name: 'Referral', value: 15, color: '#94A3B8' },
+  ]);
 
   const [isFetching, setIsFetching] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -89,9 +105,25 @@ const AdminDashboard = () => {
         monthlyLeads: leads.filter(l => new Date(l.createdAt) >= oneMonth).length,
         totalFollowUps: fups.length,
         totalSiteVisits: svisits.length,
-        closedDeals: leads.filter(l => l.status === 'Closed' || l.status === 'Won').length,
+        closedDeals: leads.filter(l => l.status === 'Closed' || l.status === 'Won' || l.status === 'Sold' || l.status === 'Booked').length,
         availableProperties: props.filter(p => p.status === 'Available').length
       });
+
+      // Calculate Lead Sources breakdown dynamically
+      if (leads.length > 0) {
+        const counts = {};
+        leads.forEach(l => {
+          const src = l.source || "Website";
+          counts[src] = (counts[src] || 0) + 1;
+        });
+        const totalLeads = leads.length;
+        const computedSources = Object.keys(counts).map((src, idx) => ({
+          name: src,
+          value: Math.round((counts[src] / totalLeads) * 100),
+          color: leadSourceColors[src] || leadColorPalette[idx % leadColorPalette.length]
+        }));
+        setLeadSources(computedSources);
+      }
 
       // Construct a faux Recent Activities stream by mixing latest db items
       const recentFups = fups.slice(0, 2).map(f => ({
@@ -115,7 +147,7 @@ const AdminDashboard = () => {
     } finally {
       setIsFetching(false);
     }
-  }, []);
+  }, [notify]);
 
   useEffect(() => { loadUsers(); }, [loadUsers]);
 
@@ -161,12 +193,20 @@ const AdminDashboard = () => {
 
   return (
     <AdminLayout>
-      <div className="p-8 md:px-10 md:py-8 max-w-[1720px] mx-auto space-y-6 bg-slate-50 min-h-screen font-inter pb-20">
+      <div className="p-8 md:px-10 md:py-8 max-w-[1720px] mx-auto space-y-6 bg-[#fbfbfa] min-h-screen font-sans pb-20">
 
-        {/* Create User Button - Float it to the right visually aligning with layout headers */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-[#0F172A] opacity-0">Hidden Title</h2>
-          <button onClick={() => setShowModal(true)} className="px-5 py-2.5 bg-[#0F172A] text-white rounded-lg flex items-center gap-2 text-xs font-black shadow-lg shadow-[#0F172A]/20 hover:scale-[1.02] transition-all active:scale-95 uppercase tracking-widest">
+        {/* Welcome Greeting Banner & Action */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-8 rounded-2xl border border-slate-100 shadow-sm gap-4">
+          <div>
+            <h1 className="text-3xl font-black font-display text-[#0F172A] tracking-tight">
+              Welcome Back, {currentAdmin?.name || 'Administrator'}
+            </h1>
+            <p className="text-sm font-semibold text-slate-500 mt-1.5 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#EAB308] animate-pulse"></span>
+              System Active • {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
+          <button onClick={() => setShowModal(true)} className="px-5 py-3 bg-[#0F172A] text-white rounded-xl flex items-center gap-2 text-xs font-black shadow-lg shadow-[#0F172A]/20 hover:scale-[1.02] hover:bg-[#1e293b] transition-all active:scale-95 uppercase tracking-widest whitespace-nowrap">
             <ShieldCheck size={16} /> Create User
           </button>
         </div>
@@ -190,16 +230,16 @@ const AdminDashboard = () => {
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 pb-4">
           <div className="flex justify-between items-start mb-8">
             <div>
-              <h3 className="text-xl font-bold font-display text-[#0F172A]">Global Conversion Trends</h3>
-              <p className="text-xs font-medium text-slate-500 mt-1">Real-time performance metrics across lead funnel</p>
+              <h3 className="text-xl font-black font-display text-[#0F172A]">Global Conversion Trends</h3>
+              <p className="text-xs font-black text-slate-400 mt-1 uppercase tracking-wider">Real-time performance metrics across lead funnel</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex gap-4 mr-4">
-                <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#0F172A]"></span><span className="text-[11px] font-bold text-slate-500">Leads</span></div>
-                <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#EAB308]"></span><span className="text-[11px] font-bold text-slate-500">Follow-Ups</span></div>
-                <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-slate-400"></span><span className="text-[11px] font-bold text-slate-500">Site Visits</span></div>
+                <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#0F172A]"></span><span className="text-[11px] font-black text-slate-500 uppercase tracking-wider">Leads</span></div>
+                <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#EAB308]"></span><span className="text-[11px] font-black text-slate-500 uppercase tracking-wider">Follow-Ups</span></div>
+                <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-400"></span><span className="text-[11px] font-black text-slate-500 uppercase tracking-wider">Site Visits</span></div>
               </div>
-              <button className="px-3 py-1.5 border border-slate-200 rounded-md text-[11px] font-bold text-slate-600 bg-white shadow-sm flex items-center gap-1 hover:bg-slate-50">
+              <button className="px-3 py-1.5 border border-slate-200 rounded-md text-[11px] font-black uppercase text-slate-600 bg-white shadow-sm flex items-center gap-1 hover:bg-slate-50">
                 Last 30 Days <span className="material-symbols-outlined text-[14px]">expand_more</span>
               </button>
             </div>
@@ -208,9 +248,9 @@ const AdminDashboard = () => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={globalConversionData} margin={{ top: 5, right: 0, left: -20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 800, fill: '#94A3B8' }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 700, fill: '#94A3B8' }} />
-                <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px' }} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900, fill: '#94A3B8' }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900, fill: '#94A3B8' }} />
+                <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '11px', fontWeight: 'bold' }} />
                 <Line type="monotone" dataKey="leads" stroke="#0F172A" strokeWidth={3} dot={false} activeDot={{ r: 6 }} />
                 <Line type="monotone" dataKey="followups" stroke="#EAB308" strokeWidth={3} dot={false} activeDot={{ r: 6 }} />
                 <Line type="monotone" dataKey="visits" stroke="#94A3B8" strokeWidth={2} strokeDasharray="5 5" dot={false} activeDot={{ r: 4 }} />
@@ -227,29 +267,29 @@ const AdminDashboard = () => {
 
             {/* Lead Sources Donut */}
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
-              <h3 className="text-lg font-bold font-display text-[#0F172A] mb-4">Lead Sources</h3>
+              <h3 className="text-[15px] font-black font-display uppercase tracking-widest text-[#0F172A] mb-4">Lead Sources</h3>
               <div className="h-[220px] relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={leadSourceData} innerRadius={65} outerRadius={85} paddingAngle={2} dataKey="value" stroke="none">
-                      {leadSourceData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                    <Pie data={leadSources} innerRadius={65} outerRadius={85} paddingAngle={2} dataKey="value" stroke="none">
+                      {leadSources.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                     </Pie>
-                    <RechartsTooltip />
+                    <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '11px', fontWeight: 'bold' }} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-xl font-bold text-[#0F172A]">12.8k</span>
-                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Leads</span>
+                  <span className="text-3xl font-black text-[#0F172A] font-display">{stats.totalLeads}</span>
+                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest mt-0.5">Leads</span>
                 </div>
               </div>
               <div className="mt-4 space-y-3">
-                {leadSourceData.map(source => (
+                {leadSources.map(source => (
                   <div key={source.name} className="flex justify-between items-center text-xs font-bold">
                     <div className="flex items-center gap-2 text-slate-500">
-                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: source.color }}></span>
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: source.color }}></span>
                       {source.name}
                     </div>
-                    <span className="text-[#0F172A]">{source.value}%</span>
+                    <span className="text-[#0F172A] font-extrabold">{source.value}%</span>
                   </div>
                 ))}
               </div>

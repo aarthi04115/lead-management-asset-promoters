@@ -69,7 +69,7 @@ const seedDB = async () => {
         console.log("Properties seeded.");
 
         // 3. Create Leads
-        const leads = await Lead.insertMany([
+        const leads = await Lead.create([
             {
                 name: "Michael Aris",
                 email: "m.aris@email.com",
@@ -93,13 +93,95 @@ const seedDB = async () => {
         console.log("Leads seeded.");
 
         // 4. Create Follow-ups
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
         await FollowUp.insertMany([
             {
-                customerName: "Michael Aris",
-                schedule: new Date(Date.now() + 86400000), // Tomorrow
+                customerName: "Karthik Menon",
+                property: "Skyline Heights 3BHK",
+                phone: "+91 9800 0000",
+                whatsapp: "+91 9700 0000",
+                schedule: new Date(today.setHours(9, 0, 0, 0)),
                 type: "Call",
-                notes: "Discuss mortgage options",
-                status: "Planned",
+                notes: "Discussed pricing flexibility and requested callback.",
+                status: "Upcoming",
+                priority: "High",
+                assignedTo: admin._id
+            },
+            {
+                customerName: "Ananya Sharma",
+                property: "Palm Grove Villas",
+                phone: "+91 9837 0000",
+                whatsapp: "+91 9729 4313",
+                schedule: new Date(today.setHours(10, 30, 0, 0)),
+                type: "Meeting",
+                notes: "Client wants brochure and floor plan shared on WhatsApp before visit.",
+                status: "Pending",
+                priority: "Medium",
+                assignedTo: employee._id
+            },
+            {
+                customerName: "Lavanya Rao",
+                property: "Skyline Heights 3BHK",
+                phone: "+91 9800 1234",
+                whatsapp: "+91 9700 5678",
+                schedule: new Date(yesterday.setHours(12, 30, 0, 0)),
+                type: "Call",
+                notes: "Requested callback after reviewing legal documents with family.",
+                status: "Pending",
+                priority: "High",
+                assignedTo: employee._id
+            },
+            {
+                customerName: "Tanvi Shah",
+                property: "Metro Square Office",
+                phone: "+91 9822 5555",
+                whatsapp: "+91 9774 4444",
+                schedule: new Date(yesterday.setHours(13, 30, 0, 0)),
+                type: "Call",
+                notes: "Interested in ready-to-move unit, asked about possession documents.",
+                status: "Pending",
+                priority: "Medium",
+                assignedTo: employee._id
+            },
+            {
+                customerName: "Aditya Kulkarni",
+                property: "Orchid County Duplex",
+                phone: "+91 9822 1814",
+                whatsapp: "+91 9774 5878",
+                schedule: new Date(tomorrow.setHours(15, 0, 0, 0)),
+                type: "Meeting",
+                notes: "Follow up after virtual tour, client asked for corner unit availability.",
+                status: "Upcoming",
+                priority: "Low",
+                assignedTo: admin._id
+            },
+            {
+                customerName: "Nisha Reddy",
+                property: "Green Acres Plot",
+                phone: "+91 9885 6595",
+                whatsapp: "+91 9197 1565",
+                schedule: new Date(yesterday.setHours(18, 15, 0, 0)),
+                type: "Call",
+                notes: "Asked for loan assistance details and preferred weekend callback.",
+                status: "Pending",
+                priority: "Low",
+                assignedTo: employee._id
+            },
+            {
+                customerName: "Amit Desai",
+                property: "Sunset Waterfront Villa",
+                phone: "+91 9896 2452",
+                whatsapp: "+91 9197 4404",
+                schedule: new Date(tomorrow.setHours(17, 0, 0, 0)),
+                type: "Call",
+                notes: "Wants to negotiate parking charges and maintenance deposit.",
+                status: "Upcoming",
+                priority: "High",
                 assignedTo: admin._id
             }
         ]);

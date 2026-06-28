@@ -23,10 +23,12 @@ npm-debug.log*
 
 # Backups and temporary project zips
 FOLLOW UP-adminn/
-"Smart Real Estate CRM Dashboard"/
-"crm project (2)"/
+Smart Real Estate CRM Dashboard/
+crm project (2)/
 lms_extracted/
 luxecrm-admin-final/
 rr_backend/
 LMS_RES_SANT-01-.zip
 backend.zip
+backend/uploads/
+backend/log.txt
