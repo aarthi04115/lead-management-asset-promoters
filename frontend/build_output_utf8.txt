@@ -1,0 +1,101 @@
+﻿
+> maestrominds-crm-frontend@1.0.0 build
+> vite build
+
+[36mvite v8.0.16 [32mbuilding client environment for production...[36m[39m
+[2K
+node.exe : [33m[vite
+:css][postcss] 
+@import must precede 
+all other statements 
+(besides @charset or 
+empty @layer)
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Users\Aarthi G 
+D\AppData\Roa ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: ([33m[v   
+ ite:css]...r emp    
+ty @layer):Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+1388 |     ΓöÇΓöÇΓöÇΓ
+öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
+öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
+öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
+öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
+öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
+öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
+öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
+öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
+öÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓ
+öÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+1389 |  
+1390 |  @import url('
+https://fonts.googlea
+pis.com/css2?family=I
+nter:wght@400;500;600
+;700;800&family=Outfi
+t:wght@400;500;600;7.
+..
+     |  ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^
+1391 |  
+1392 |  /* ΓöÇΓöÇ 
+Reset ΓöÇΓöÇΓöÇΓöÇΓöÇ
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+ΓöÇΓöÇ */[39m
+transforming...Γ£ô 2825 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                           1.81 kB Γöé gzip:   0.82 kB
+dist/assets/placeholder-e4TcwPS-.png  1,029.49 kB
+dist/assets/index-CmEr5MaC.css           40.34 kB Γöé gzip:   8.31 kB
+dist/assets/index-BDLC6tt6.js         1,108.23 kB Γöé gzip: 305.54 kB
+
+[32mΓ£ô built in 1.28s[39m
+[33m[plugin builtin:
+vite-reporter] 
+(!) Some chunks are 
+larger than 500 kB 
+after minification. 
+Consider:
+- Using dynamic 
+import() to 
+code-split the 
+application
+- Use build.rolldownO
+ptions.output.codeSpl
+itting to improve 
+chunking: https://rol
+ldown.rs/reference/Ou
+tputOptions.codeSplit
+ting
+- Adjust chunk size 
+limit for this 
+warning via build.chu
+nkSizeWarningLimit.[
+39m
