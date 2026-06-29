@@ -5,6 +5,7 @@ import { useRBAC } from '../../utils/rbac';
 import { useSearch } from '../../context/SearchContext';
 import { useSiteVisit } from '../../context/SiteVisitContext';
 import SiteVisitModal from '../../components/admin/SiteVisitModal';
+import { getBackendURL } from '../../api';
 
 export default function EmployeeSiteVisit() {
     const { user } = useAuth();
@@ -54,7 +55,7 @@ export default function EmployeeSiteVisit() {
     const getUploadUrl = (img) => {
         if (!img) return "https://lh3.googleusercontent.com/aida-public/AB6AXuBTpI6gfH77BVdo5QG_GE347b9_X7tZhtEu6nxB0Vw7Q-e9anYhecrgUiT7j5WV4Pw-fC6Efp6rev4YVqWFernrNAm6roWQQlc7OJkAtAE-fel8XzYWy9NX4FGU2sJib-j6iqdr7c0EOvsuqnz8uzW75dg65GEzLS_Mt3s2Hy2lG5xusjd6Qui_kTAT63BQ1WNFaFTY3ykUn4BfrY1eCtMNr0RGdDBGPoie5O82GEmfCQNLSQJERGqM-RxwVgaOHCwr533L9xNSU42i";
         if (img.startsWith('http://') || img.startsWith('https://')) return img;
-        return `http://localhost:5005/uploads/${img}`;
+        return getBackendURL(`/uploads/${img}`);
     };
 
     return (

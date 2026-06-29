@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import placeholderImg from '../../assets/placeholder.png';
+import { getBackendURL } from '../../api';
 
 export default function PropertyCard({ property }) {
     const { title, location, price, status, category, images } = property;
 
     const getImageUrl = (url) => {
         if (!url) return placeholderImg;
-        if (url.startsWith('/')) return `http://localhost:5000${url}`;
+        if (url.startsWith('/')) return getBackendURL(url);
         return url;
     };
 

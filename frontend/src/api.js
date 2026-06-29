@@ -1,8 +1,22 @@
 import axios from "axios";
 
 // When using Vite's dev proxy, /api requests are forwarded to localhost:5000
-// The VITE_API_BASE_URL env var lets you point at a different backend in staging/prod
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+// The VITE_API_BASE_URL or VITE_API_URL env var lets you point at a different backend in staging/prod
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || "/api";
+
+export const getBackendURL = (path) => {
+  if (!path) return "";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  const apiBase = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || "/api";
+  let baseDomain = "";
+  if (apiBase.startsWith("http://") || apiBase.startsWith("https://")) {
+    baseDomain = apiBase.endsWith("/api") ? apiBase.slice(0, -4) : apiBase;
+  } else {
+    baseDomain = "http://localhost:5005"; // Local fallback
+  }
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${baseDomain}${cleanPath}`;
+};
 
 const api = axios.create({
   baseURL: BASE_URL,

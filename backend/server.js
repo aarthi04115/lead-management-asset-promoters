@@ -13,6 +13,8 @@ const roundRobinRoutes = require("./routes/roundrobin");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const emailService = require("./services/emailService");
 
+const path = require("path");
+
 dotenv.config();
 
 // Fail fast if critical env vars are missing
@@ -29,6 +31,7 @@ connectDB();
 const app = express();
 
 app.use(helmet());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:5173",
   credentials: true,
