@@ -10,6 +10,7 @@ const propertyRoutes = require("./routes/propertyRoutes");
 const followUpRoutes = require("./routes/followUpRoutes");
 const siteVisitRoutes = require("./routes/siteVisitRoutes");
 const roundRobinRoutes = require("./routes/roundrobin");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 const emailService = require("./services/emailService");
 
 dotenv.config();
@@ -55,6 +56,7 @@ app.use("/api/properties", propertyRoutes);
 app.use("/api/roundrobin", roundRobinRoutes);
 app.use("/api/followups", followUpRoutes);
 app.use("/api/sitevisits", siteVisitRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.get("/api/health", (_req, res) =>
   res.json({ success: true, uptime: Math.floor(process.uptime()), timestamp: new Date().toISOString() })

@@ -1,5 +1,31 @@
 const mongoose = require("mongoose");
 
+const uuidv4 = () => new mongoose.Types.ObjectId().toString();
+
+const activitySchema = new mongoose.Schema({
+    id: { type: String, default: uuidv4 },
+    type: { type: String, default: 'status_change' },
+    action: String,
+    details: String,
+    from: String,
+    to: String,
+    performedBy: {
+        id: String,
+        name: String,
+    },
+    createdAt: { type: Date, default: Date.now },
+}, { _id: false });
+
+const noteSchema = new mongoose.Schema({
+    id: { type: String, default: uuidv4 },
+    text: String,
+    addedBy: {
+        id: String,
+        name: String,
+    },
+    createdAt: { type: Date, default: Date.now },
+}, { _id: false });
+
 const leadSchema = new mongoose.Schema(
     {
         name: {
@@ -46,10 +72,8 @@ const leadSchema = new mongoose.Schema(
             ref: "User",
             default: null,
         },
-        notes: {
-            type: String,
-            trim: true,
-        },
+        notes: [noteSchema],
+        activities: [activitySchema],
         leadId: {
             type: String,
             unique: true,

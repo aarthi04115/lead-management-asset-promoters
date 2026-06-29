@@ -33,7 +33,10 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: { values: ["admin", "employee"], message: "Role must be admin or employee" },
+      enum: {
+        values: ["admin", "employee", "lead_management", "followup_management", "sitevisit_verification", "sales_executive"],
+        message: "Role must be a valid system role"
+      },
       default: "employee",
     },
     isActive: {

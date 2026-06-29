@@ -61,8 +61,8 @@ export const LeadProvider = ({ children }) => {
             const axiosRes = await api.get('/auth/admin/users');
             const res = axiosRes.data;
             if (res && res.success) {
-                // only include users with role Employee
-                const emps = (res.data || []).filter(u => u.role === 'Employee').map(u => ({ ...u, _id: u.id || u._id }));
+                // include all users except admins as assignment candidates
+                const emps = (res.data || []).filter(u => u.role !== 'admin').map(u => ({ ...u, _id: u.id || u._id }));
                 setEmployees(emps);
             } else {
                 setEmployees([]);
@@ -133,8 +133,23 @@ export const LeadProvider = ({ children }) => {
         }
     };
 
+    const addLeadNote = async (id, text) => {
+        try {
+            const axiosRes = await api.post(`/leads/${id}/notes`, { text });
+            const res = axiosRes.data;
+            if (res && res.success) {
+                const updated = normalizeLead(res.data);
+                setLeads(l => l.map(ld => (ld._id === id ? updated : ld)));
+                return { success: true, data: updated };
+            }
+            return { success: false, error: res.error || res.message };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    };
+
     return (
-        <LeadContext.Provider value={{ leads, employees, meta, loading, fetchLeads, fetchEmployees, createLead, updateLead, deleteLead }}>
+        <LeadContext.Provider value={{ leads, employees, meta, loading, fetchLeads, fetchEmployees, createLead, updateLead, deleteLead, addLeadNote }}>
             {children}
         </LeadContext.Provider>
     );

@@ -38,6 +38,7 @@ router.post("/change-password", protect, changePassword);
 router.get("/admin/users", protect, authorizeRoles("admin"), getAllUsers);
 router.post("/admin/users", protect, authorizeRoles("admin"), adminCreateUser);
 router.put("/admin/users/:id", protect, authorizeRoles("admin"), adminUpdateUser);
+router.patch("/admin/users/:id/status", protect, authorizeRoles("admin"), adminUpdateUser);
 router.delete("/admin/users/:id", protect, authorizeRoles("admin"), adminDeleteUser);
 
 module.exports = router;

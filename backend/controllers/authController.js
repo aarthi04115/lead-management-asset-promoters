@@ -28,7 +28,8 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email and password are required." });
     }
 
-    if (!role || !["admin", "employee"].includes(role)) {
+    const allowedSelectedRoles = ["admin", "employee", "lead_management", "followup_management", "sitevisit_verification", "sales_executive"];
+    if (!role || !allowedSelectedRoles.includes(role)) {
       return res.status(400).json({ success: false, message: "Invalid role selected." });
     }
 
@@ -39,9 +40,13 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ success: false, message: "Incorrect email or password." });
     }
 
-    // Validate that selected role matches user's actual role
-    if (user.role !== role) {
-      return res.status(403).json({ success: false, message: `Invalid role. Your account is registered as an ${user.role}.` });
+    // Validate that selected role matches user's actual role category or exact role
+    const isEmployeeRole = ["employee", "lead_management", "followup_management", "sitevisit_verification", "sales_executive"].includes(user.role);
+    if (role === "admin" && user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Invalid role. Your account is registered as an employee." });
+    }
+    if (role === "employee" && !isEmployeeRole) {
+      return res.status(403).json({ success: false, message: `Invalid role. Your account is registered as ${user.role}.` });
     }
 
     if (!user.isActive) {
@@ -132,11 +137,14 @@ const adminCreateUser = async (req, res) => {
       return res.status(409).json({ success: false, message: "That email is already registered." });
     }
 
+    const allowedRoles = ["admin", "employee", "lead_management", "followup_management", "sitevisit_verification", "sales_executive"];
+    const targetRole = allowedRoles.includes(role) ? role : "employee";
+
     const user = await User.create({
       name: name.trim(),
       email,
       password,
-      role: role === "admin" ? "admin" : "employee",
+      role: targetRole,
     });
 
     return res.status(201).json({
@@ -165,7 +173,8 @@ const adminUpdateUser = async (req, res) => {
 
     const patch = {};
     if (name && name.trim()) patch.name = name.trim();
-    if (role && ["admin", "employee"].includes(role)) patch.role = role;
+    const allowedRoles = ["admin", "employee", "lead_management", "followup_management", "sitevisit_verification", "sales_executive"];
+    if (role && allowedRoles.includes(role)) patch.role = role;
     if (typeof isActive === "boolean") patch.isActive = isActive;
 
     if (Object.keys(patch).length === 0) {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
@@ -27,18 +27,33 @@ const Navbar = () => {
   const initials = user?.name?.charAt(0).toUpperCase() ?? "?";
   const isAdmin = user?.role === "admin";
 
+  const getLinkClass = ({ isActive }) =>
+    `navbar-link ${isActive ? 'text-primary border-b-2 border-secondary font-extrabold' : 'text-on-surface-variant hover:text-primary border-b-2 border-transparent'} text-[11px] uppercase tracking-wider font-bold transition-all px-1 py-[21px]`;
+
   return (
     <nav className="navbar">
-      <Link to={isAdmin ? "/admin" : "/dashboard"} className="navbar-brand">
-        <div className="navbar-logo-box">🏠</div>
-        <div className="navbar-brand-text">
-          <span className="navbar-brand-name">Maestrominds</span>
-          <span className="navbar-brand-sub">Enterprise CRM</span>
-        </div>
-      </Link>
+      <div className="flex items-center gap-8">
+        <Link to={isAdmin ? "/admin" : "/dashboard"} className="navbar-brand">
+          <div className="navbar-logo-box">🏠</div>
+          <div className="navbar-brand-text">
+            <span className="navbar-brand-name">Maestrominds</span>
+            <span className="navbar-brand-sub">Enterprise CRM</span>
+          </div>
+        </Link>
+
+        {!isAdmin && (
+          <div className="hidden md:flex items-center gap-6">
+            <NavLink to="/dashboard" end className={getLinkClass}>Dashboard</NavLink>
+            <NavLink to="/employee/leads" className={getLinkClass}>Leads</NavLink>
+            <NavLink to="/employee/followups" className={getLinkClass}>Follow-ups</NavLink>
+            <NavLink to="/employee/site-visits" className={getLinkClass}>Site Visits</NavLink>
+            <NavLink to="/employee/properties" className={getLinkClass}>Properties</NavLink>
+          </div>
+        )}
+      </div>
 
       <div className="navbar-right">
-        <span className={`badge ${isAdmin ? "badge-admin" : "badge-employee"}`}>
+        <span className={`badge ${isAdmin ? "badge-admin" : "badge-employee"} uppercase tracking-widest text-[10px] font-extrabold`}>
           {isAdmin ? "👑 Admin" : "👤 Employee"}
         </span>
 

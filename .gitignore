@@ -22,6 +22,8 @@ npm-debug.log*
 .idea/
 
 # Backups and temporary project zips
+crm-employee/
+*.zip
 FOLLOW UP-adminn/
 Smart Real Estate CRM Dashboard/
 crm project (2)/

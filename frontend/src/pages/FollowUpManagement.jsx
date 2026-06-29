@@ -925,7 +925,7 @@ const FollowUpManagement = () => {
                                         </label>
                                         <label>
                                             WhatsApp
-                                            <input required value={formData.whatsapp} onChange={(event) => handleFormChange('whatsapp', event.target.value)} />
+                                            <input value={formData.whatsapp} onChange={(event) => handleFormChange('whatsapp', event.target.value)} />
                                         </label>
                                         <label>
                                             Date
@@ -960,7 +960,7 @@ const FollowUpManagement = () => {
                                         </div>
                                         <label className="full-width">
                                             Notes
-                                            <textarea required rows="4" value={formData.notes} onChange={(event) => handleFormChange('notes', event.target.value)} />
+                                            <textarea rows="4" value={formData.notes} onChange={(event) => handleFormChange('notes', event.target.value)} />
                                         </label>
                                     </div>
                                     <div className="modal-footer">

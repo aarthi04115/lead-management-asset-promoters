@@ -10,6 +10,7 @@ const SiteVisitVerification = () => {
     const [visits, setVisits] = useState([]);
     const [isFetching, setIsFetching] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchVisits = async () => {
         try {
@@ -47,6 +48,13 @@ const SiteVisitVerification = () => {
         }
     };
 
+    const filteredVisits = visits.filter(v =>
+        !searchQuery ||
+        (v.customerName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (v.propertyName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (v.employeeName || v.agent?.name || '').toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <AdminLayout>
             <div className="max-w-[1440px] mx-auto p-lg">
@@ -54,6 +62,25 @@ const SiteVisitVerification = () => {
                     <div>
                         <h2 className="text-3xl font-bold text-slate-900">Site Visit Verification</h2>
                         <p className="text-slate-500 text-lg">Prioritize and review high-value site tours scheduled for today.</p>
+                    </div>
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                        <div className="relative flex-grow sm:flex-grow-0">
+                            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                            <input
+                                type="text"
+                                placeholder="Search site visits..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-blue-500 outline-none transition-all w-full sm:w-64 text-sm font-semibold shadow-sm"
+                            />
+                        </div>
+                        <button
+                            onClick={() => setShowModal(true)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all active:scale-95 shadow-md text-sm font-bold whitespace-nowrap"
+                        >
+                            <span className="material-symbols-outlined text-lg">add</span>
+                            Add New Visit
+                        </button>
                     </div>
                 </div>
 
@@ -73,10 +100,10 @@ const SiteVisitVerification = () => {
 
                         {isFetching ? (
                             <div className="p-20 text-center text-slate-400 font-bold">Loading Site Visits...</div>
-                        ) : visits.length === 0 ? (
+                        ) : filteredVisits.length === 0 ? (
                             <div className="p-20 text-center text-slate-400 font-bold border-2 border-dashed border-slate-200 rounded-xl">No visits found.</div>
                         ) : (
-                            visits.map(visit => (
+                            filteredVisits.map(visit => (
                                 <VisitCard key={visit._id} visit={visit} onAction={handleAction} />
                             ))
                         )}
