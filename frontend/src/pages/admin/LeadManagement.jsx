@@ -1,6 +1,6 @@
 import React from "react";
-import AdminLayout from "../components/AdminLayout";
-import AdminLeadManagement from "../components/admin/AdminLeadManagement";
+import AdminLayout from "../../components/layout/AdminLayout";
+import AdminLeadManagement from "../../components/admin/AdminLeadManagement";
 
 const LeadManagement = () => {
     return (

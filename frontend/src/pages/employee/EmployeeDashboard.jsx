@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "../context/AuthContext";
-import EmployeeLayout from "../components/EmployeeLayout";
-import Notification from "../components/Notification";
-import { useNotify } from "../hooks/useNotify";
-import { formatDate } from "../utils/formatters";
-import api from "../api";
+import { useAuth } from "../../context/AuthContext";
+import EmployeeLayout from "../../components/layout/EmployeeLayout";
+import Notification from "../../components/common/Notification";
+import { useNotify } from "../../hooks/useNotify";
+import { formatDate } from "../../utils/formatters";
+import api from "../../api";
 import { Link } from "react-router-dom";
 import { Phone, MapPin, FileText, CheckCircle2, AlertCircle, Calendar, Plus, RefreshCw, Layers } from "lucide-react";
 
@@ -37,7 +37,7 @@ export default function EmployeeDashboard() {
       const [statsRes, followupsRes, leadsRes] = await Promise.all([
         api.get("/dashboard/stats"),
         api.get("/followups?limit=5"),
-        api.get("/leads?limit=8")
+        api.get("/leads?limit=8&assignedToMe=true")
       ]);
 
       if (statsRes.data?.success) {

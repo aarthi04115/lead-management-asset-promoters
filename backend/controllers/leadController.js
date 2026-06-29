@@ -82,7 +82,7 @@ exports.createLead = asyncHandler(async (req, res) => {
 // @route   GET /api/leads
 // @access  Private (Admin/Employee)
 exports.getLeads = asyncHandler(async (req, res) => {
-    const { search, status, source, property, assignedTo, page = 1, limit = 10 } = req.query;
+    const { search, status, source, property, assignedTo, assignedToMe, page = 1, limit = 10 } = req.query;
     const query = {};
 
     // Role dynamic isolation
@@ -102,6 +102,9 @@ exports.getLeads = asyncHandler(async (req, res) => {
             { assignedTo: req.user._id },
             { _id: { $in: combinedLeadIds } }
         ];
+    } else if (assignedToMe === 'true') {
+        // Explicit filter: return only leads assigned to the currently logged-in user
+        query.assignedTo = req.user._id;
     } else if (assignedTo) {
         query.assignedTo = assignedTo;
     }

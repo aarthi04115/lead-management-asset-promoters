@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import EmployeeLayout from '../components/EmployeeLayout';
-import { useProperty } from '../context/PropertyContext';
-import FeaturedProperty from '../components/property/FeaturedProperty';
-import PropertyCard from '../components/property/PropertyCard';
+import EmployeeLayout from '../../components/layout/EmployeeLayout';
+import { useProperty } from '../../context/PropertyContext';
+import FeaturedProperty from '../../components/property/FeaturedProperty';
+import PropertyCard from '../../components/property/PropertyCard';
 
 export default function EmployeeProperties() {
     const { properties, featuredProperty, stats, loading, error, filters, updateFilter, searchQuery, setSearchQuery } = useProperty();

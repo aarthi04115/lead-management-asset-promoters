@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authAPI } from "../api";
-import { useAuth } from "../context/AuthContext";
+import { authAPI } from "../../api";
+import { useAuth } from "../../context/AuthContext";
 
 const EyeIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -21,15 +21,15 @@ const ChangePassword = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const [currentPassword,  setCurrentPassword]  = useState("");
-  const [newPassword,      setNewPassword]       = useState("");
-  const [confirmPassword,  setConfirmPassword]   = useState("");
-  const [showCurrent,      setShowCurrent]       = useState(false);
-  const [showNew,          setShowNew]           = useState(false);
-  const [showConfirm,      setShowConfirm]       = useState(false);
-  const [errorMsg,         setErrorMsg]          = useState("");
-  const [successMsg,       setSuccessMsg]        = useState("");
-  const [isSubmitting,     setIsSubmitting]      = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!user) {
     navigate("/");

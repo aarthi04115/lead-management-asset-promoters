@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import EmployeeLayout from '../components/EmployeeLayout';
-import { useAuth } from '../context/AuthContext';
-import { useRBAC } from '../utils/rbac';
-import { useFollowUp } from '../context/FollowUpContext';
-import { useSearch } from '../context/SearchContext';
-import FollowUpFormModal from '../components/shared/FollowUpFormModal';
+import EmployeeLayout from '../../components/layout/EmployeeLayout';
+import { useAuth } from '../../context/AuthContext';
+import { useRBAC } from '../../utils/rbac';
+import { useFollowUp } from '../../context/FollowUpContext';
+import { useSearch } from '../../context/SearchContext';
+import FollowUpFormModal from '../../components/shared/FollowUpFormModal';
 
 export default function EmployeeFollowUp() {
     const { user } = useAuth();

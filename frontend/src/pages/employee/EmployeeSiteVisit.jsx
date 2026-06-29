@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import EmployeeLayout from '../components/EmployeeLayout';
-import { useAuth } from '../context/AuthContext';
-import { useRBAC } from '../utils/rbac';
-import { useSearch } from '../context/SearchContext';
-import { useSiteVisit } from '../context/SiteVisitContext';
-import SiteVisitModal from '../components/admin/SiteVisitModal';
+import EmployeeLayout from '../../components/layout/EmployeeLayout';
+import { useAuth } from '../../context/AuthContext';
+import { useRBAC } from '../../utils/rbac';
+import { useSearch } from '../../context/SearchContext';
+import { useSiteVisit } from '../../context/SiteVisitContext';
+import SiteVisitModal from '../../components/admin/SiteVisitModal';
 
 export default function EmployeeSiteVisit() {
     const { user } = useAuth();
@@ -81,10 +81,10 @@ export default function EmployeeSiteVisit() {
                         {can('create_sitevisit') ? (
                             <button
                                 onClick={() => setShowModal(true)}
-                                className="bg-primary hover:bg-opacity-95 text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all active:scale-95 shadow-md text-sm font-bold whitespace-nowrap"
+                                className="bg-[#171C2D] hover:bg-[#23293D] text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all active:scale-95 shadow-md text-sm font-bold whitespace-nowrap"
                             >
                                 <span className="material-symbols-outlined text-lg">add</span>
-                                Add New Visit
+                                Schedule Site Visit
                             </button>
                         ) : (
                             <button
@@ -101,32 +101,32 @@ export default function EmployeeSiteVisit() {
 
                 {/* KPI CARDS - BENTO GRID STYLE */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="bg-white p-6 rounded-2xl border border-outline-variant/60 shadow-sm hover:shadow-md transition-shadow group flex-1">
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group flex-1">
                         <div className="flex justify-between items-start mb-4">
-                            <div className="p-3 bg-surface-container rounded-xl text-primary group-hover:bg-secondary-fixed transition-colors flex items-center justify-center">
+                            <div className="p-3 bg-[#171C2D]/10 rounded-xl text-[#171C2D] group-hover:bg-[#171C2D]/20 transition-colors flex items-center justify-center">
                                 <span className="material-symbols-outlined text-[24px]">today</span>
                             </div>
                         </div>
-                        <p className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Today's Visits</p>
-                        <h3 className="font-display-lg text-headline-lg mt-1 font-bold font-display">{stats?.todaysVisits || 0}</h3>
+                        <p className="font-label-md text-label-md text-slate-500 uppercase tracking-wider font-semibold">Today's Visits</p>
+                        <h3 className="font-display-lg text-headline-lg mt-1 font-bold font-display text-[#171C2D]">{stats?.todaysVisits || 0}</h3>
                     </div>
-                    <div className="bg-white p-6 rounded-2xl border border-outline-variant/60 shadow-sm hover:shadow-md transition-shadow group flex-1">
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group flex-1">
                         <div className="flex justify-between items-start mb-4">
-                            <div className="p-3 bg-surface-container rounded-xl text-primary group-hover:bg-secondary-fixed transition-colors flex items-center justify-center">
+                            <div className="p-3 bg-[#F4B400]/10 rounded-xl text-[#F4B400] group-hover:bg-[#F4B400]/20 transition-colors flex items-center justify-center">
                                 <span className="material-symbols-outlined text-[24px]">pending_actions</span>
                             </div>
                         </div>
-                        <p className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Pending Verifications</p>
-                        <h3 className="font-display-lg text-headline-lg mt-1 font-bold font-display text-secondary">{stats?.pending || 0}</h3>
+                        <p className="font-label-md text-label-md text-slate-500 uppercase tracking-wider font-semibold">Pending Verifications</p>
+                        <h3 className="font-display-lg text-headline-lg mt-1 font-bold font-display text-[#F4B400]">{stats?.pending || 0}</h3>
                     </div>
-                    <div className="bg-white p-6 rounded-2xl border border-outline-variant/60 shadow-sm hover:shadow-md transition-shadow group flex-1">
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group flex-1">
                         <div className="flex justify-between items-start mb-4">
-                            <div className="p-3 bg-surface-container rounded-xl text-primary group-hover:bg-secondary-fixed transition-colors flex items-center justify-center">
+                            <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600 group-hover:bg-emerald-100 transition-colors flex items-center justify-center">
                                 <span className="material-symbols-outlined text-[24px]">verified</span>
                             </div>
                         </div>
-                        <p className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Completed Verifications</p>
-                        <h3 className="font-display-lg text-headline-lg mt-1 font-bold font-display">{stats?.completed || 0}</h3>
+                        <p className="font-label-md text-label-md text-slate-500 uppercase tracking-wider font-semibold">Completed Verifications</p>
+                        <h3 className="font-display-lg text-headline-lg mt-1 font-bold font-display text-emerald-600">{stats?.completed || 0}</h3>
                     </div>
                     <div className="bg-white p-6 rounded-2xl border border-secondary-fixed/50 bg-secondary-fixed/5 shadow-sm hover:shadow-md transition-shadow group flex-1">
                         <div className="flex justify-between items-start mb-4">
@@ -144,7 +144,7 @@ export default function EmployeeSiteVisit() {
                     {/* UPCOMING SITE VISITS */}
                     <div className="lg:col-span-2 space-y-4">
                         <div className="flex items-center justify-between">
-                            <h3 className="font-bold text-lg text-primary font-display">Upcoming Site Visits</h3>
+                            <h3 className="font-bold text-lg text-[#171C2D] font-display">Upcoming Site Visits</h3>
                         </div>
                         <div className="space-y-4">
                             {loading ? (
@@ -186,7 +186,7 @@ export default function EmployeeSiteVisit() {
                                             </span>
                                         </div>
                                     </div>
-                                    <button className="w-10 h-10 rounded-full border border-outline flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all active:scale-90">
+                                    <button className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-[#171C2D] hover:bg-[#171C2D] hover:text-white transition-all active:scale-90">
                                         <span className="material-symbols-outlined text-lg">arrow_forward</span>
                                     </button>
                                 </div>
@@ -201,7 +201,7 @@ export default function EmployeeSiteVisit() {
 
                     {/* VISIT HISTORY */}
                     <div className="space-y-4">
-                        <h3 className="font-bold text-lg text-primary font-display">Recent History</h3>
+                        <h3 className="font-bold text-lg text-[#171C2D] font-display">Recent History</h3>
                         <div className="bg-white rounded-2xl border border-outline-variant/60 overflow-hidden shadow-sm">
                             <div className="p-4 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-lowest">
                                 <span className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Last 48 Hours</span>

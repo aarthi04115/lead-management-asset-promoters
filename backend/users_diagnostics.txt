@@ -1,0 +1,30 @@
+=== DB: crm_db ===
+  Email: admin@maestrominds.com Role: admin Name: Super Admin
+=== DB: lead-crm ===
+=== DB: leed-management-asset-promoters ===
+  Email: sarah@crm.com Role: admin Name: Sarah Executive
+  Email: emily@crm.com Role: employee Name: Emily Watson
+=== DB: lms ===
+  Email: admin@example.com Role: Admin Name: Sarah Jenkins
+  Email: employee@example.com Role: Employee Name: Julian Thorne
+=== DB: maestrominds-crm ===
+  Email: admin@maestrominds.com Role: admin Name: System Admin
+  Email: john@maestrominds.com Role: employee Name: John Doe
+  Email: jane@maestrominds.com Role: employee Name: Jane Smith
+  Email: bob@maestrominds.com Role: employee Name: Bob Wilson
+  Email: alice@maestrominds.com Role: employee Name: Alice Brown
+  Email: charlie@maestrominds.com Role: employee Name: Charlie Davis
+=== DB: propcrm ===
+=== DB: realestatecrm ===
+=== DB: smart_crm ===
+  Email: admin@propcrm.com Role: admin Name: Admin Manager
+  Email: sarah@propcrm.com Role: employee Name: Sarah Chen
+  Email: marcus@propcrm.com Role: employee Name: Marcus Webb
+  Email: priya@propcrm.com Role: employee Name: Priya Sharma
+  Email: james@propcrm.com Role: employee Name: James Liu
+  Email: emma@propcrm.com Role: employee Name: Emma Torres
+  Email: liam@propcrm.com Role: employee Name: Liam Park
+=== DB: smart_real_estate ===
+  Email: admin@maestrominds.com Role: admin Name: Sarah Executive
+  Email: emily@maestrominds.com Role: employee Name: Emily Watson
+  Email: john@maestrominds.com Role: employee Name: John Agent

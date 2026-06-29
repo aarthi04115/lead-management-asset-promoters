@@ -18,10 +18,10 @@ import {
     X,
     AlertTriangle,
 } from 'lucide-react';
-import AdminLayout from '../components/AdminLayout';
-import Notification from '../components/Notification';
-import { useNotify } from '../hooks/useNotify';
-import api from '../api';
+import AdminLayout from '../../components/layout/AdminLayout';
+import Notification from '../../components/common/Notification';
+import { useNotify } from '../../hooks/useNotify';
+import api from '../../api';
 import './FollowUpManagement.css';
 
 const pad = (value) => String(value).padStart(2, '0');

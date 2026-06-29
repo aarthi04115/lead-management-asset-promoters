@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import AdminLayout from "../components/AdminLayout";
-import Notification from "../components/Notification";
-import { useNotify } from "../hooks/useNotify";
-import { useAuth } from "../context/AuthContext";
-import api from "../api";
+import AdminLayout from "../../components/layout/AdminLayout";
+import Notification from "../../components/common/Notification";
+import { useNotify } from "../../hooks/useNotify";
+import { useAuth } from "../../context/AuthContext";
+import api from "../../api";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, UserCog, UserPlus, Search, Building2 } from "lucide-react";
 import { clsx } from "clsx";

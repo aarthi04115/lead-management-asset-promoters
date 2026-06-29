@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AdminLayout from "../components/AdminLayout";
+import AdminLayout from "../../components/layout/AdminLayout";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import {
     BarChart3, Download, TrendingUp, Users, Calendar,

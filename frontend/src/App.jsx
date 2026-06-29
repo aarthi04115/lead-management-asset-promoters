@@ -5,22 +5,22 @@ import { FollowUpProvider } from "./context/FollowUpContext";
 import { PropertyProvider } from "./context/PropertyContext";
 import { SiteVisitProvider } from "./context/SiteVisitContext";
 import { SearchProvider } from "./context/SearchContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Login from "./pages/Login";
-import ChangePassword from "./pages/ChangePassword";
-import AdminDashboard from "./pages/AdminDashboard";
-import LeadManagement from "./pages/LeadManagement";
-import FollowUpManagement from "./pages/FollowUpManagement";
-import SiteVisitVerification from "./pages/SiteVisitVerification";
-import PropertyManagement from "./pages/PropertyManagement";
-import EmployeeDashboard from "./pages/EmployeeDashboard";
-import Reports from "./pages/Reports";
-import Settings from "./pages/Settings";
-import EmployeeManagement from "./pages/EmployeeManagement";
-import EmployeeLead from "./pages/EmployeeLead";
-import EmployeeFollowUp from "./pages/EmployeeFollowUp";
-import EmployeeSiteVisit from "./pages/EmployeeSiteVisit";
-import EmployeeProperties from "./pages/EmployeeProperties";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import Login from "./pages/auth/Login";
+import ChangePassword from "./pages/auth/ChangePassword";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import LeadManagement from "./pages/admin/LeadManagement";
+import FollowUpManagement from "./pages/admin/FollowUpManagement";
+import SiteVisitVerification from "./pages/admin/SiteVisitVerification";
+import PropertyManagement from "./pages/admin/PropertyManagement";
+import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
+import Reports from "./pages/admin/Reports";
+import Settings from "./pages/admin/Settings";
+import EmployeeManagement from "./pages/admin/EmployeeManagement";
+import EmployeeLead from "./pages/employee/EmployeeLead";
+import EmployeeFollowUp from "./pages/employee/EmployeeFollowUp";
+import EmployeeSiteVisit from "./pages/employee/EmployeeSiteVisit";
+import EmployeeProperties from "./pages/employee/EmployeeProperties";
 
 const App = () => (
   <AuthProvider>

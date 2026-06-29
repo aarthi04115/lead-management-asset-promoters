@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AdminLayout from "../components/AdminLayout";
+import AdminLayout from "../../components/layout/AdminLayout";
 import { Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 import { UserCircle, Shield, BellRing, Palette, Save } from "lucide-react";
 

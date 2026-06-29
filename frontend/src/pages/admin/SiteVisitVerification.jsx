@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import AdminLayout from "../components/AdminLayout";
-import Notification from "../components/Notification";
-import { useNotify } from "../hooks/useNotify";
-import api from "../api";
-import SiteVisitModal from "../components/admin/SiteVisitModal";
+import AdminLayout from "../../components/layout/AdminLayout";
+import Notification from "../../components/common/Notification";
+import { useNotify } from "../../hooks/useNotify";
+import api from "../../api";
+import SiteVisitModal from "../../components/admin/SiteVisitModal";
 
 const SiteVisitVerification = () => {
     const { notification, notify } = useNotify();
@@ -74,13 +74,6 @@ const SiteVisitVerification = () => {
                                 className="pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-blue-500 outline-none transition-all w-full sm:w-64 text-sm font-semibold shadow-sm"
                             />
                         </div>
-                        <button
-                            onClick={() => setShowModal(true)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all active:scale-95 shadow-md text-sm font-bold whitespace-nowrap"
-                        >
-                            <span className="material-symbols-outlined text-lg">add</span>
-                            Add New Visit
-                        </button>
                     </div>
                 </div>
 

@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "../context/AuthContext";
-import AdminLayout from "../components/AdminLayout";
-import Notification from "../components/Notification";
-import { useNotify } from "../hooks/useNotify";
-import api from "../api";
+import { useAuth } from "../../context/AuthContext";
+import AdminLayout from "../../components/layout/AdminLayout";
+import Notification from "../../components/common/Notification";
+import { useNotify } from "../../hooks/useNotify";
+import api from "../../api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,

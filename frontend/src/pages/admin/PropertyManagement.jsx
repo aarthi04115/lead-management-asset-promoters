@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import AdminLayout from "../components/AdminLayout";
-import Notification from "../components/Notification";
-import PropertyModal from "../components/property/PropertyModal";
-import PropertyFormModal from "../components/property/PropertyFormModal";
-import { useNotify } from "../hooks/useNotify";
-import api from "../api";
+import AdminLayout from "../../components/layout/AdminLayout";
+import Notification from "../../components/common/Notification";
+import PropertyModal from "../../components/property/PropertyModal";
+import PropertyFormModal from "../../components/property/PropertyFormModal";
+import { useNotify } from "../../hooks/useNotify";
+import api from "../../api";
 import {
     Plus, Box, CheckCircle2, Lock, Handshake, AlertCircle,
     MapPin, Banknote, LayoutGrid, List, Key

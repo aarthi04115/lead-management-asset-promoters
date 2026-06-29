@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import EmployeeLayout from '../components/EmployeeLayout';
-import { useAuth } from '../context/AuthContext';
-import { useRBAC } from '../utils/rbac';
-import { useSearch } from '../context/SearchContext';
-import api from '../api';
-import { useLeads } from '../context/LeadContext';
-import { useFollowUp } from '../context/FollowUpContext';
+import EmployeeLayout from '../../components/layout/EmployeeLayout';
+import { useAuth } from '../../context/AuthContext';
+import { useRBAC } from '../../utils/rbac';
+import { useSearch } from '../../context/SearchContext';
+import api from '../../api';
+import { useLeads } from '../../context/LeadContext';
+import { useFollowUp } from '../../context/FollowUpContext';
 
 const StatusBadge = ({ status, size = 'md' }) => {
     const padding = size === 'sm' ? 'px-2.5 py-0.5 text-[9px]' : 'px-3 py-1 text-[10px]';

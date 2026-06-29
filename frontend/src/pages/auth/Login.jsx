@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
-import { useAuth } from "../context/AuthContext";
+import api from "../../api";
+import { useAuth } from "../../context/AuthContext";
 
 // SVG Eye Icons
 const EyeIcon = () => (
