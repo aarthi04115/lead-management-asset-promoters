@@ -1,19 +1,20 @@
 import axios from "axios";
 
 // When using Vite's dev proxy, /api requests are forwarded to localhost:5000
-// The VITE_API_BASE_URL or VITE_API_URL env var lets you point at a different backend in staging/prod
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || "/api";
+// Permanent automatic environment detection to avoid Vercel build-caching issues
+const isDev = import.meta.env.MODE === "development" || import.meta.env.DEV;
+const BASE_URL = isDev
+  ? "http://localhost:5005/api"
+  : "https://lead-management-asset-promoters-2.onrender.com/api";
 
 export const getBackendURL = (path) => {
   if (!path) return "";
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
-  const apiBase = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || "/api";
-  let baseDomain = "";
-  if (apiBase.startsWith("http://") || apiBase.startsWith("https://")) {
-    baseDomain = apiBase.endsWith("/api") ? apiBase.slice(0, -4) : apiBase;
-  } else {
-    baseDomain = "http://localhost:5005"; // Local fallback
-  }
+
+  const baseDomain = isDev
+    ? "http://localhost:5005"
+    : "https://lead-management-asset-promoters-2.onrender.com";
+
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
   return `${baseDomain}${cleanPath}`;
 };
