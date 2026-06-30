@@ -1,0 +1,44 @@
+diff --git a/.env.example b/.env.example
+index 14d0d41..17af45e 100644
+--- a/.env.example
++++ b/.env.example
+@@ -10,7 +10,7 @@ MONGO_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/<dbname>?retryWr
+ # ── JWT ──────────────────────────────────────────────────────
+ # Any long random string — keep this secret!
+ JWT_SECRET=change_me_to_a_long_random_secret
+-JWT_EXPIRE=7d
++JWT_EXPIRE=30d
+ 
+ # ── Server ───────────────────────────────────────────────────
+ PORT=5000
+diff --git a/backend/controllers/authController.js b/backend/controllers/authController.js
+index 9987f33..c7738c5 100644
+--- a/backend/controllers/authController.js
++++ b/backend/controllers/authController.js
+@@ -4,9 +4,12 @@ const OTP = require("../models/OTP");
+ const emailService = require("../services/emailService");
+ const otpUtils = require("../services/otpUtils");
+ 
++// Session timeout duration for login tokens.
++// Increased from the previous 7-day default to 30 days so users stay
++// logged in longer. Override via the JWT_EXPIRE env var if needed.
+ const signToken = (userId, role) =>
+   jwt.sign({ id: userId, role }, process.env.JWT_SECRET, {
+-    expiresIn: process.env.JWT_EXPIRE || "7d",
++    expiresIn: process.env.JWT_EXPIRE || "30d",
+   });
+ 
+ const buildUserPayload = (user) => ({
+diff --git a/frontend/src/pages/auth/Login.jsx b/frontend/src/pages/auth/Login.jsx
+index b3d4efd..fef0d69 100644
+--- a/frontend/src/pages/auth/Login.jsx
++++ b/frontend/src/pages/auth/Login.jsx
+@@ -201,7 +201,7 @@ const Login = () => {
+                       id="email"
+                       type="email"
+                       className="has-icon"
+-                      placeholder={selectedRole === "admin" ? "admin@maestrominds.com" : "you@maestrominds.com"}
++                      placeholder={selectedRole === "admin" ? "admin@yourcompany.com" : "you@yourcompany.com"}
+                       value={email}
+                       onChange={(e) => { setEmail(e.target.value); setErrorMsg(""); }}
+                       disabled={isSubmitting}
