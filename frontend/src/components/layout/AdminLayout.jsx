@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     LayoutDashboard, Users, Bell, Building2, MapPin, BarChart3,
     ChevronLeft, ChevronRight, LogOut, ChevronDown,
-    UserCog, Settings2, Search
+    UserCog, Settings2, Search, Phone
 } from "lucide-react";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import api from "../../api";
 
 function cn(...inputs) {
     return twMerge(clsx(inputs));
@@ -62,6 +63,69 @@ const AdminLayout = ({ children }) => {
         reports: location.pathname.includes('/admin/reports'),
         settings: location.pathname.includes('/admin/settings'),
     });
+
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const [leadRes, fupRes, svRes] = await Promise.all([
+                    api.get("/leads?limit=5").catch(() => ({ data: { data: [] } })),
+                    api.get("/followups").catch(() => ({ data: { data: [] } })),
+                    api.get("/sitevisits?limit=5").catch(() => ({ data: { data: [] } }))
+                ]);
+
+                const fetchedLeads = leadRes.data?.data || [];
+                const fetchedFups = fupRes.data?.data || [];
+                const fetchedSvisits = svRes.data?.data || [];
+
+                const activities = [];
+
+                fetchedFups.slice(0, 3).forEach(f => {
+                    const schedDate = f.schedule ? new Date(f.schedule).toLocaleDateString() : '';
+                    activities.push({
+                        id: `fup-${f._id}`,
+                        title: 'Follow-Up Scheduled',
+                        desc: `Scheduled with ${f.customerName || 'Unknown'} on ${f.followUpDate || schedDate}`,
+                        time: 'Soon',
+                        type: 'followup'
+                    });
+                });
+
+                fetchedSvisits.slice(0, 3).forEach(v => {
+                    activities.push({
+                        id: `sv-${v._id}`,
+                        title: 'Site Visit Scheduled',
+                        desc: `Visit with ${v.customerName || 'Unknown'} for ${v.propertyName || 'Property'}`,
+                        time: 'Scheduled',
+                        type: 'sitevisit'
+                    });
+                });
+
+                fetchedLeads.slice(0, 3).forEach(l => {
+                    activities.push({
+                        id: `lead-${l._id}`,
+                        title: 'New Lead Registered',
+                        desc: `${l.name} from ${l.source || 'Website'}`,
+                        time: 'Registered',
+                        type: 'lead'
+                    });
+                });
+
+                setNotifications(activities);
+                setUnreadCount(activities.length);
+            } catch (err) {
+                console.error("Failed to load notifications:", err);
+            }
+        };
+        if (user) {
+            fetchNotifications();
+            const interval = setInterval(fetchNotifications, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [user, location.pathname]);
 
     useEffect(() => {
         const handler = () => { if (window.innerWidth >= 1024) setMobileOpen(false); };
@@ -297,10 +361,69 @@ const AdminLayout = ({ children }) => {
                         </div>
                     </div>
                     <div className="flex items-center gap-6">
-                        <button className="relative w-10 h-10 rounded-full border border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-400 hover:text-[#F4B400] transition-colors group">
-                            <Bell size={18} className="group-hover:rotate-12 transition-transform" />
-                            <span className="absolute top-2.5 right-3 w-1.5 h-1.5 bg-[#F4B400] rounded-full" />
-                        </button>
+                        <div className="relative">
+                            <button
+                                onClick={() => {
+                                    setDropdownOpen(!dropdownOpen);
+                                    setUnreadCount(0);
+                                }}
+                                className="relative w-10 h-10 rounded-full border border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-400 hover:text-[#F4B400] transition-colors group"
+                            >
+                                <Bell size={18} className="group-hover:rotate-12 transition-transform" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-2.5 right-3 w-1.5 h-1.5 bg-[#F4B400] rounded-full animate-pulse" />
+                                )}
+                            </button>
+
+                            {dropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden text-[#171C2D] animate-fade-in divide-y divide-slate-100">
+                                    <div className="px-4 py-3 bg-slate-50 flex justify-between items-center">
+                                        <span className="text-sm font-bold text-[#171C2D]">Recent Activities</span>
+                                        <button
+                                            onClick={() => {
+                                                setNotifications([]);
+                                                setDropdownOpen(false);
+                                            }}
+                                            className="text-[11px] font-black text-rose-500 hover:underline uppercase tracking-wider"
+                                        >
+                                            Clear All
+                                        </button>
+                                    </div>
+                                    <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 custom-scrollbar">
+                                        {notifications.length > 0 ? (
+                                            notifications.map((item) => {
+                                                const selectIcon = () => {
+                                                    if (item.type === 'followup') return <Phone size={14} className="text-[#EAB308]" />;
+                                                    if (item.type === 'sitevisit') return <MapPin size={14} className="text-blue-500" />;
+                                                    return <Users size={14} className="text-indigo-500" />;
+                                                };
+                                                const selectBg = () => {
+                                                    if (item.type === 'followup') return 'bg-[#EAB308]/10';
+                                                    if (item.type === 'sitevisit') return 'bg-blue-500/10';
+                                                    return 'bg-indigo-500/10';
+                                                };
+                                                return (
+                                                    <div key={item.id} className="p-3.5 hover:bg-slate-50 flex items-start gap-3 transition-colors cursor-pointer" onClick={() => setDropdownOpen(false)}>
+                                                        <div className={cn("p-2 rounded-xl shrink-0 mt-0.5", selectBg())}>
+                                                            {selectIcon()}
+                                                        </div>
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="text-[13px] font-bold text-[#171C2D] truncate">{item.title}</p>
+                                                            <p className="text-[11px] font-medium text-slate-500 mt-0.5 leading-snug">{item.desc}</p>
+                                                            <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded uppercase tracking-wider mt-1.5 inline-block">{item.time}</span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                        ) : (
+                                            <div className="py-8 text-center text-xs font-semibold text-slate-400">
+                                                No recent notifications
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                         <div className="h-8 w-px bg-slate-200" />
                         <div className="flex items-center gap-3 bg-white p-1 pr-4 rounded-full border border-slate-100 shadow-sm">
                             <div className="w-9 h-9 rounded-full bg-[#171C2D] text-[#F4B400] flex items-center justify-center text-sm font-bold tracking-tight shadow-inner">
