@@ -90,9 +90,9 @@ const AdminDashboard = () => {
     try {
       const [userRes, leadRes, fupRes, svRes, propRes] = await Promise.all([
         api.get("/auth/admin/users"),
-        api.get("/leads").catch(() => ({ data: { data: [] } })),
+        api.get("/leads?limit=10000").catch(() => ({ data: { data: [] } })),
         api.get("/followups").catch(() => ({ data: { data: [] } })),
-        api.get("/sitevisits").catch(() => ({ data: { data: [] } })),
+        api.get("/sitevisits?limit=10000").catch(() => ({ data: { data: [] } })),
         api.get("/properties").catch(() => ({ data: { data: [] } }))
       ]);
       setUsers(userRes.data.data);
