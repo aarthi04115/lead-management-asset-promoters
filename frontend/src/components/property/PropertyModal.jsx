@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { X, Edit, Trash2, MapPin, Download, UploadCloud, CheckCircle2, Calendar } from "lucide-react";
+import { createPortal } from "react-dom";
+import { X, Edit, Trash2, MapPin, Download, UploadCloud, CheckCircle2, Calendar, FileText } from "lucide-react";
 
 export default function PropertyModal({ property, onClose, onEdit, onDelete }) {
     const [activeTab, setActiveTab] = useState("overview");
@@ -26,7 +27,7 @@ export default function PropertyModal({ property, onClose, onEdit, onDelete }) {
         "Security": "🛡️", "Ocean View": "🌊", "Theater": "🎬"
     };
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 font-['Poppins',sans-serif]">
             <div className="absolute inset-0 bg-[#0B1C30]/40 backdrop-blur-sm" onClick={onClose} />
 
@@ -173,6 +174,7 @@ export default function PropertyModal({ property, onClose, onEdit, onDelete }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

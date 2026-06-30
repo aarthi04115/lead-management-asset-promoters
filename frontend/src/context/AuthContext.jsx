@@ -3,25 +3,20 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isInitializing, setIsInitializing] = useState(true);
-
-  // Rehydrate session from localStorage on first load
-  useEffect(() => {
+  const [currentUser, setCurrentUser] = useState(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-
     if (token && storedUser) {
       try {
-        setCurrentUser(JSON.parse(storedUser));
+        return JSON.parse(storedUser);
       } catch {
-        // Corrupted data — clear it
         localStorage.removeItem("token");
         localStorage.removeItem("user");
       }
     }
-    setIsInitializing(false);
-  }, []);
+    return null;
+  });
+  const [isInitializing, setIsInitializing] = useState(false);
 
   const login = (userData, token) => {
     localStorage.setItem("token", token);

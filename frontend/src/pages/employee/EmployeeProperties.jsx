@@ -3,9 +3,11 @@ import EmployeeLayout from '../../components/layout/EmployeeLayout';
 import { useProperty } from '../../context/PropertyContext';
 import FeaturedProperty from '../../components/property/FeaturedProperty';
 import PropertyCard from '../../components/property/PropertyCard';
+import PropertyModal from '../../components/property/PropertyModal';
 
 export default function EmployeeProperties() {
     const { properties, featuredProperty, stats, loading, error, filters, updateFilter, searchQuery, setSearchQuery } = useProperty();
+    const [selectedProperty, setSelectedProperty] = useState(null);
 
     const remainingProperties = properties.filter(p => p._id !== featuredProperty?._id);
 
@@ -77,24 +79,34 @@ export default function EmployeeProperties() {
                     <div className="space-y-10">
                         {/* Property Overview */}
                         {featuredProperty && (
-                            <FeaturedProperty
-                                property={featuredProperty}
-                                stats={stats}
-                            />
+                            <div onClick={() => setSelectedProperty(featuredProperty)} className="cursor-pointer">
+                                <FeaturedProperty
+                                    property={featuredProperty}
+                                    stats={stats}
+                                />
+                            </div>
                         )}
 
                         {/* Property Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {remainingProperties.map(property => (
                                 <PropertyCard
                                     key={property._id}
                                     property={property}
+                                    onClick={() => setSelectedProperty(property)}
                                 />
                             ))}
                         </div>
                     </div>
                 )}
             </main>
+
+            {selectedProperty && (
+                <PropertyModal
+                    property={selectedProperty}
+                    onClose={() => setSelectedProperty(null)}
+                />
+            )}
         </EmployeeLayout>
     );
 }

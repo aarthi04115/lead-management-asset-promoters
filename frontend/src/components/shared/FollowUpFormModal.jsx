@@ -24,9 +24,9 @@ export default function FollowUpFormModal({ isOpen, onClose, onSave, followUp, s
                 leadId: followUp.leadId || '',
                 assignedTo: followUp.assignedTo || '',
                 customerName: followUp.customerName || '',
-                phoneNumber: followUp.phoneNumber || '',
-                whatsappNumber: followUp.whatsappNumber || '',
-                propertyName: followUp.propertyName || '',
+                phoneNumber: followUp.phoneNumber || followUp.phone || '',
+                whatsappNumber: followUp.whatsappNumber || followUp.whatsapp || '',
+                propertyName: followUp.propertyName || followUp.property || '',
                 followUpDate: (followUp.followUpDate || '').slice(0, 10),
                 followUpTime: followUp.followUpTime || '10:00',
                 priority: followUp.priority || 'Normal',
@@ -54,6 +54,11 @@ export default function FollowUpFormModal({ isOpen, onClose, onSave, followUp, s
         onSave(formData);
     };
 
+    const getInitials = (name) => {
+        if (!name) return '??';
+        return name.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase();
+    };
+
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 animate-fade-in">
             <div className="absolute inset-0 bg-primary-container/40 backdrop-blur-sm" onClick={onClose}></div>
@@ -61,8 +66,12 @@ export default function FollowUpFormModal({ isOpen, onClose, onSave, followUp, s
                 {/* Modal Header */}
                 <div className="p-8 border-b border-outline-variant flex justify-between items-start">
                     <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 rounded-2xl bg-primary-container text-white flex items-center justify-center font-headline-md text-headline-md">
-                            <span className="material-symbols-outlined text-[32px]">{isEdit ? 'edit_square' : 'event_note'}</span>
+                        <div className="w-16 h-16 rounded-2xl bg-primary-container text-white flex items-center justify-center font-bold text-xl uppercase shadow-sm">
+                            {isEdit && formData.customerName ? (
+                                <span>{getInitials(formData.customerName)}</span>
+                            ) : (
+                                <span className="material-symbols-outlined text-[32px]">{isEdit ? 'edit_square' : 'event_note'}</span>
+                            )}
                         </div>
                         <div>
                             <h3 className="font-headline-md text-headline-md text-primary font-bold">{isEdit ? 'Edit Follow-Up' : 'Schedule New Follow-Up'}</h3>

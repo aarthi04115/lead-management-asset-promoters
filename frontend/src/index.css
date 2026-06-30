@@ -93,7 +93,9 @@ body {
    SPLIT-PANEL LOGIN LAYOUT
    ============================================================ */
 .login-root {
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background: var(--bg-page);
@@ -168,7 +170,9 @@ body {
   flex: 1;
   display: grid;
   grid-template-columns: 1fr 480px;
-  min-height: calc(100vh - 65px);
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
 }
 
 /* Left marketing panel */

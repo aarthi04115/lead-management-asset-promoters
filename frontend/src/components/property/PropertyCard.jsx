@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import placeholderImg from '../../assets/placeholder.png';
 import { getBackendURL } from '../../api';
 
-export default function PropertyCard({ property }) {
+export default function PropertyCard({ property, onClick }) {
     const { title, location, price, status, category, images } = property;
 
     const getImageUrl = (url) => {
@@ -23,7 +23,7 @@ export default function PropertyCard({ property }) {
     const [imgError, setImgError] = useState(false);
 
     return (
-        <div className="property-card bg-white border border-outline-variant rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-md h-full flex flex-col">
+        <div className="property-card bg-white border border-outline-variant rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-md h-full flex flex-col cursor-pointer" onClick={onClick}>
             <div className="h-64 relative overflow-hidden bg-surface-container-highest">
                 {!imgError && image ? (
                     <img

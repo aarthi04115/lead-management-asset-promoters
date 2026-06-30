@@ -542,11 +542,11 @@ export default function EmployeeDashboard() {
 
             <div className="grid grid-cols-2 gap-4 flex-1">
               <button
-                onClick={() => notify("info", "Feature incoming: listing upload dashboard available in next version.")}
+                onClick={() => setShowAddLeadModal(true)}
                 className="bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-xl p-4 flex flex-col items-center justify-center gap-2 group transition-all text-[#171C2D]"
               >
-                <Layers className="w-5 h-5 text-[#171C2D] group-hover:scale-110 transition-transform" />
-                <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap mt-1">New Listing</span>
+                <Plus className="w-5 h-5 text-[#171C2D] group-hover:scale-110 transition-transform" />
+                <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap mt-1">Add Lead</span>
               </button>
 
               <Link

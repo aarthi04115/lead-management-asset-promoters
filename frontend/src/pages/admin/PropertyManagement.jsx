@@ -225,7 +225,7 @@ export default function PropertyManagement() {
                         <p className="text-sm font-medium text-[#75777E]">No properties match your filters.</p>
                     </div>
                 ) : (
-                    <div className={cn(view === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-4")}>
+                    <div className={cn(view === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "grid grid-cols-1 lg:grid-cols-2 gap-6")}>
                         {filteredProperties.map(p => (
                             <div key={p._id} onClick={() => setSelectedProperty(p)} className={cn("bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-[#c5c6ce]/30 cursor-pointer transition-shadow", view === 'list' && "flex items-center")}>
                                 <div className={cn("relative", view === 'grid' ? "h-48 w-full" : "h-32 w-48 shrink-0")}>

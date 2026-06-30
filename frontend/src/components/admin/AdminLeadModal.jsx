@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLeads } from '../../context/LeadContext';
 import StatusBadge from '../shared/StatusBadge';
 import InitialsBadge from '../shared/InitialsBadge';
@@ -117,14 +118,14 @@ const AdminLeadModal = ({ lead, employees, onClose, onEdit, onDelete, onStatusUp
     ? Math.floor((Date.now() - new Date(detail.createdAt)) / 86400000)
     : 0;
 
-  return (
+  return createPortal(
     <div
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0,
         backgroundColor: 'rgba(15, 23, 42, 0.5)',
         backdropFilter: 'blur(4px)',
-        zIndex: 1000,
+        zIndex: 9999,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -543,7 +544,8 @@ const AdminLeadModal = ({ lead, employees, onClose, onEdit, onDelete, onStatusUp
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

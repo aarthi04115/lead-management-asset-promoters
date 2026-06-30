@@ -4,8 +4,10 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     LayoutDashboard, Users, Bell, Building2, MapPin,
-    ChevronLeft, ChevronRight, LogOut, ChevronDown, Search
+    ChevronLeft, ChevronRight, LogOut, ChevronDown, Search, X, Phone
 } from "lucide-react";
+import { useSearch } from "../../context/SearchContext";
+import api from "../../api";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -44,9 +46,73 @@ const getRoleLabel = (role) => {
 const EmployeeLayout = ({ children }) => {
     const { user, logout } = useAuth();
     const location = useLocation();
+    const { globalSearch: searchQuery, setGlobalSearch: setSearchQuery } = useSearch();
 
     const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const [leadRes, fupRes, svRes] = await Promise.all([
+                    api.get("/leads?limit=5").catch(() => ({ data: { data: [] } })),
+                    api.get("/followups").catch(() => ({ data: { data: [] } })),
+                    api.get("/sitevisits?limit=5").catch(() => ({ data: { data: [] } }))
+                ]);
+
+                const fetchedLeads = leadRes.data?.data || [];
+                const fetchedFups = fupRes.data?.data || [];
+                const fetchedSvisits = svRes.data?.data || [];
+
+                const activities = [];
+
+                fetchedFups.slice(0, 3).forEach(f => {
+                    const schedDate = f.schedule ? new Date(f.schedule).toLocaleDateString() : '';
+                    activities.push({
+                        id: `fup-${f._id}`,
+                        title: 'Follow-Up Scheduled',
+                        desc: `Scheduled with ${f.customerName || 'Unknown'} on ${f.followUpDate || schedDate}`,
+                        time: 'Soon',
+                        type: 'followup'
+                    });
+                });
+
+                fetchedSvisits.slice(0, 3).forEach(v => {
+                    activities.push({
+                        id: `sv-${v._id}`,
+                        title: 'Site Visit Scheduled',
+                        desc: `Visit with ${v.customerName || 'Unknown'} for ${v.propertyName || 'Property'}`,
+                        time: 'Scheduled',
+                        type: 'sitevisit'
+                    });
+                });
+
+                fetchedLeads.slice(0, 3).forEach(l => {
+                    activities.push({
+                        id: `lead-${l._id}`,
+                        title: 'New Lead Registered',
+                        desc: `${l.name} from ${l.source || 'Website'}`,
+                        time: 'Registered',
+                        type: 'lead'
+                    });
+                });
+
+                setNotifications(activities);
+                setUnreadCount(activities.length);
+            } catch (err) {
+                console.error("Failed to load notifications:", err);
+            }
+        };
+        if (user) {
+            fetchNotifications();
+            const interval = setInterval(fetchNotifications, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [user, location.pathname]);
 
     useEffect(() => {
         const handler = () => { if (window.innerWidth >= 1024) setMobileOpen(false); };
@@ -146,6 +212,53 @@ const EmployeeLayout = ({ children }) => {
                     {renderNavList(false)}
                 </nav>
 
+                {/* Sidebar Search Bar and Notifications */}
+                <div className="px-[18px] mb-4 shrink-0">
+                    {!collapsed ? (
+                        <div className="relative w-full">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A0A7B8]" size={16} />
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-9 pr-4 py-2 bg-[#23293D] border border-[rgba(255,255,255,0.08)] rounded-xl text-xs outline-none focus:border-[#F4B400] text-white font-medium placeholder:text-[#A0A7B8]/60"
+                            />
+                        </div>
+                    ) : (
+                        <div className="flex justify-center text-[#A0A7B8] hover:text-white cursor-pointer" onClick={() => setCollapsed(false)}>
+                            <Search size={18} />
+                        </div>
+                    )}
+
+                    {/* Notifications Button */}
+                    <button
+                        onClick={() => {
+                            setDropdownOpen(true);
+                            setUnreadCount(0);
+                        }}
+                        className="w-full flex items-center gap-[14px] px-[18px] py-[10px] min-h-[48px] rounded-[12px] text-[#A0A7B8] hover:text-white hover:bg-[rgba(255,255,255,0.06)] transition-colors group outline-none mt-2"
+                        title={collapsed ? "Notifications" : ""}
+                    >
+                        <div className="relative">
+                            <Bell size={20} className="shrink-0 transition-transform group-hover:rotate-12" />
+                            {unreadCount > 0 && (
+                                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#F4B400] rounded-full border-2 border-[#171C2D] animate-pulse" />
+                            )}
+                        </div>
+                        {!collapsed && (
+                            <span className="text-[14px] font-bold whitespace-nowrap pt-0.5 flex-1 text-left">
+                                Notifications
+                            </span>
+                        )}
+                        {!collapsed && unreadCount > 0 && (
+                            <span className="bg-[#F4B400] text-[#171C2D] text-[10px] font-black px-2 py-0.5 rounded-full shrink-0">
+                                {unreadCount}
+                            </span>
+                        )}
+                    </button>
+                </div>
+
                 {/* Bottom Profile and Logout Section */}
                 <div className="p-4 border-t border-[rgba(255,255,255,0.08)] shrink-0 bg-[#171C2D]">
                     {!collapsed && (
@@ -213,32 +326,6 @@ const EmployeeLayout = ({ children }) => {
                         <button className="lg:hidden text-slate-500 hover:text-[#0F172A]" onClick={() => setMobileOpen(true)}>
                             <LayoutDashboard size={24} />
                         </button>
-                        <div className="relative w-64 md:w-96 hidden md:block">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                            <input
-                                type="text"
-                                placeholder="Search leads, properties, or clients..."
-                                className="w-full pl-10 pr-4 py-2.5 bg-slate-100/50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0F172A]/5 focus:border-[#F4B400] transition-all text-[#0F172A] font-medium placeholder:text-slate-400 shadow-inner"
-                            />
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-6">
-                        <button className="relative w-10 h-10 rounded-full border border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-400 hover:text-[#F4B400] transition-colors group">
-                            <Bell size={18} className="group-hover:rotate-12 transition-transform" />
-                            <span className="absolute top-2.5 right-3 w-1.5 h-1.5 bg-[#F4B400] rounded-full" />
-                        </button>
-                        <div className="h-8 w-px bg-slate-200" />
-                        <div className="flex items-center gap-3 bg-white p-1 pr-4 rounded-full border border-slate-100 shadow-sm">
-                            <div className="w-9 h-9 rounded-full bg-[#171C2D] text-[#F4B400] flex items-center justify-center text-sm font-bold tracking-tight shadow-inner">
-                                {user?.name ? user.name.substring(0, 2).toUpperCase() : "EM"}
-                            </div>
-                            <div>
-                                <p className="text-[13px] font-bold text-[#171C2D] leading-none mb-1">{user?.name || "Employee"}</p>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">
-                                    {getRoleLabel(user?.role)}
-                                </p>
-                            </div>
-                        </div>
                     </div>
                 </header>
 
@@ -246,6 +333,68 @@ const EmployeeLayout = ({ children }) => {
                     {children}
                 </main>
             </div>
+
+            {/* Centered Notifications Modal Showcase */}
+            {dropdownOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" onClick={() => setDropdownOpen(false)} />
+                    <div className="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden text-[#171C2D] animate-fade-in flex flex-col max-h-[80vh]">
+                        <div className="px-6 py-4 bg-slate-50 flex justify-between items-center border-b border-slate-100 shrink-0">
+                            <div className="flex items-center gap-2">
+                                <Bell className="text-[#F4B400]" size={18} />
+                                <span className="text-base font-bold text-[#171C2D]">Recent Notifications</span>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={() => {
+                                        setNotifications([]);
+                                        setDropdownOpen(false);
+                                    }}
+                                    className="text-[11px] font-black text-rose-500 hover:underline uppercase tracking-wider"
+                                >
+                                    Clear All
+                                </button>
+                                <button onClick={() => setDropdownOpen(false)} className="text-slate-400 hover:text-slate-600">
+                                    <X size={18} />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="overflow-y-auto divide-y divide-slate-100 custom-scrollbar flex-1">
+                            {notifications.length > 0 ? (
+                                notifications.map((item) => {
+                                    const selectIcon = () => {
+                                        if (item.type === 'followup') return <Phone size={14} className="text-[#EAB308]" />;
+                                        if (item.type === 'sitevisit') return <MapPin size={14} className="text-blue-500" />;
+                                        return <Users size={14} className="text-indigo-500" />;
+                                    };
+                                    const selectBg = () => {
+                                        if (item.type === 'followup') return 'bg-[#EAB308]/10';
+                                        if (item.type === 'sitevisit') return 'bg-blue-500/10';
+                                        return 'bg-indigo-500/10';
+                                    };
+                                    return (
+                                        <div key={item.id} className="p-4 hover:bg-slate-50/50 flex items-start gap-4 transition-colors cursor-pointer" onClick={() => setDropdownOpen(false)}>
+                                            <div className={cn("p-2.5 rounded-xl shrink-0 mt-0.5", selectBg())}>
+                                                {selectIcon()}
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-[14px] font-bold text-[#171C2D]">{item.title}</p>
+                                                <p className="text-[12px] font-medium text-slate-500 mt-1 leading-relaxed">{item.desc}</p>
+                                                <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider mt-2.5 inline-block">{item.time}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="py-16 text-center text-sm font-semibold text-slate-400 flex flex-col items-center justify-center gap-2">
+                                    <Bell size={32} className="text-slate-300" />
+                                    No recent notifications
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

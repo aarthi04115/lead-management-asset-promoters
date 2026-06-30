@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const LEAD_STATUSES = [
   'New', 'Attempted Call', 'Connected', 'Interested', 'Follow-Up',
@@ -112,14 +113,14 @@ const AdminLeadForm = ({ lead, employees, onClose, onSubmit }) => {
     setSubmitting(false);
   };
 
-  return (
+  return createPortal(
     <div
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0,
         backgroundColor: 'rgba(15, 23, 42, 0.5)',
         backdropFilter: 'blur(4px)',
-        zIndex: 1000,
+        zIndex: 9999,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -279,7 +280,8 @@ const AdminLeadForm = ({ lead, employees, onClose, onSubmit }) => {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

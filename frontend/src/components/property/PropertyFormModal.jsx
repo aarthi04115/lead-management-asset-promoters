@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Image as ImageIcon, UploadCloud } from "lucide-react";
 
 const propertyCategories = ["Residential", "Commercial", "Resort", "Historic"];
@@ -88,7 +89,7 @@ export default function PropertyFormModal({ mode, initialProperty, onClose, onSu
         setIsSubmitting(false);
     };
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-[200] flex items-center justify-center font-['Poppins',sans-serif] p-4">
             <div className="absolute inset-0 bg-[#0B1C30]/40 backdrop-blur-sm" onClick={onClose} />
             <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
@@ -205,6 +206,7 @@ export default function PropertyFormModal({ mode, initialProperty, onClose, onSu
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

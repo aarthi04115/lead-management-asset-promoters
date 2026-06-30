@@ -84,21 +84,6 @@ const Login = () => {
 
   return (
     <div className="login-root">
-      {/* Top bar */}
-      <header className="login-topbar">
-        <div className="login-topbar-brand">
-          <div className="topbar-logo">🏠</div>
-          <div className="topbar-brand-text">
-            <span className="topbar-brand-name">Maestrominds</span>
-            <span className="topbar-subtitle">Enterprise CRM</span>
-          </div>
-        </div>
-        <div className="topbar-status">
-          <span className="status-dot" />
-          System Status: Online
-        </div>
-      </header>
-
       <div className="login-body">
         {/* Left hero panel */}
         <aside className="login-hero">

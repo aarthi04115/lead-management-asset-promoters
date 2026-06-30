@@ -26,6 +26,7 @@ const mapFollowUpForFrontend = (fu) => {
     }
     if (f.phone) f.phoneNumber = f.phone;
     if (f.whatsapp) f.whatsappNumber = f.whatsapp;
+    if (f.property) f.propertyName = f.property;
     return f;
 };
 
