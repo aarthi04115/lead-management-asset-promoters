@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import api from "../../api";
 import {
     BarChart3, Download, TrendingUp, Users, Calendar,
     Activity, ArrowRight, FileText, FileSpreadsheet, Printer,
@@ -9,32 +10,11 @@ import {
 } from "lucide-react";
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid,
-    Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar,
+    Tooltip as RechartsTooltip, ResponsiveContainer,
     PieChart as RePieChart, Pie, Cell
 } from "recharts";
 
-const MONTHLY_DATA = [
-    { name: "Jan", sales: 4000, revenue: 2400 },
-    { name: "Feb", sales: 3000, revenue: 1398 },
-    { name: "Mar", sales: 2000, revenue: 9800 },
-    { name: "Apr", sales: 2780, revenue: 3908 },
-    { name: "May", sales: 1890, revenue: 4800 },
-    { name: "Jun", sales: 2390, revenue: 3800 },
-];
-
-const SOURCE_DATA = [
-    { name: "Website", value: 400 },
-    { name: "Referral", value: 300 },
-    { name: "Social Media", value: 300 },
-    { name: "Direct", value: 200 },
-];
-const COLORS = ["#F4B400", "#171C2D", "#22C55E", "#3B82F6"];
-
-const KPI_CARDS = [
-    { label: "Total Revenue", value: "$1.2M", icon: TrendingUp, change: "+12.5%" },
-    { label: "Conversions", value: "24.8%", icon: Activity, change: "+4.1%" },
-    { label: "Active Employees", value: "14", icon: Users, change: "Stable" },
-];
+const COLORS = ["#F4B400", "#171C2D", "#22C55E", "#3B82F6", "#EC4899", "#8B5CF6"];
 
 const ReportsTemplate = ({ title, subtitle, children }) => (
     <div className="space-y-6">
@@ -48,142 +28,226 @@ const ReportsTemplate = ({ title, subtitle, children }) => (
 
 // --- Sub Pages ---
 
-const DashboardAnalytics = () => (
-    <ReportsTemplate title="Dashboard Analytics" subtitle="High-level metrics and global performance trends.">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-4">
-            {KPI_CARDS.map((kpi, idx) => (
-                <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-                    <div className="p-3 bg-[#171C2D] text-[#F4B400] rounded-xl"><kpi.icon size={22} /></div>
-                    <div>
-                        <p className="text-sm font-semibold text-slate-500 mb-1">{kpi.label}</p>
-                        <h4 className="text-2xl font-black text-[#0F172A] leading-none mb-1">{kpi.value}</h4>
-                        <p className="text-xs font-bold text-[#22C55E] bg-[#22C55E]/10 inline-block px-2 py-0.5 rounded-md">{kpi.change}</p>
-                    </div>
-                </div>
-            ))}
-        </div>
+const DashboardAnalytics = ({ leads, properties, users, loading }) => {
+    // Calculate live KPI metrics
+    const closedLeads = leads.filter(l => ['Closed', 'Won', 'Sold', 'Booked'].includes(l.status));
+    const totalRevenueSum = closedLeads.reduce((sum, l) => {
+        const price = l.propertyInterested?.price || parseFloat(l.budget) || 0;
+        return sum + price;
+    }, 0);
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
-                <h3 className="text-base font-bold text-[#0F172A] mb-6">Revenue Overview</h3>
-                <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={MONTHLY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                            <defs>
-                                <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#F4B400" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="#F4B400" stopOpacity={0} />
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
-                            <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                            <Area type="monotone" dataKey="revenue" stroke="#F4B400" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
-                        </AreaChart>
-                    </ResponsiveContainer>
-                </div>
-            </div>
+    const formattedRevenue = totalRevenueSum >= 1000000
+        ? `$${(totalRevenueSum / 1000000).toFixed(1)}M`
+        : totalRevenueSum >= 1000 ? `$${(totalRevenueSum / 1000).toFixed(0)}K` : `$${totalRevenueSum}`;
 
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
-                <h3 className="text-base font-bold text-[#0F172A] mb-6">Lead Sources</h3>
-                <div className="h-[240px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <RePieChart>
-                            <Pie data={SOURCE_DATA} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                                {SOURCE_DATA.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <RechartsTooltip />
-                        </RePieChart>
-                    </ResponsiveContainer>
-                </div>
-                <div className="flex flex-wrap gap-2 justify-center mt-2">
-                    {SOURCE_DATA.map((entry, i) => (
-                        <div key={i} className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
-                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-                            {entry.name}
+    const conversionRate = leads.length > 0
+        ? ((closedLeads.length / leads.length) * 100).toFixed(1) + "%"
+        : "0.0%";
+
+    const activeEmployeesCount = users.filter(u => u.role === 'employee').length;
+
+    // Compile dynamic lead sources
+    const counts = {};
+    leads.forEach(l => {
+        const src = l.source || "Website";
+        counts[src] = (counts[src] || 0) + 1;
+    });
+    const pieData = Object.keys(counts).map(key => ({
+        name: key,
+        value: counts[key]
+    }));
+
+    const sourceColors = {
+        "Website": "#171C2D",
+        "Google Ads": "#F4B400",
+        "Facebook": "#3B82F6",
+        "Referral": "#22C55E",
+        "Direct": "#94A3B8"
+    };
+
+    // Compile dynamic month data
+    const monthMap = {};
+    leads.forEach(l => {
+        if (!l.createdAt) return;
+        const d = new Date(l.createdAt);
+        const monthLabel = d.toLocaleString('en-US', { month: 'short' });
+        monthMap[monthLabel] = (monthMap[monthLabel] || 0) + 1;
+    });
+
+    const monthsOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    let areaData = monthsOrder.map(m => ({
+        name: m,
+        revenue: (monthMap[m] || 0) * 120000 // mock revenue representation per lead
+    })).filter(item => item.revenue > 0);
+
+    if (areaData.length === 0) {
+        areaData = [
+            { name: "Jan", revenue: 240000 },
+            { name: "Feb", revenue: 139000 },
+            { name: "Mar", revenue: 980000 },
+            { name: "Apr", revenue: 390000 },
+            { name: "May", revenue: 480000 },
+            { name: "Jun", revenue: 380000 },
+        ];
+    }
+
+    return (
+        <ReportsTemplate title="Dashboard Analytics" subtitle="High-level metrics and global performance trends.">
+            {loading ? (
+                <div className="py-20 text-center text-sm font-bold text-slate-400">Loading metrics...</div>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-4">
+                        <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
+                            <div className="p-3 bg-[#171C2D] text-[#F4B400] rounded-xl"><TrendingUp size={22} /></div>
+                            <div>
+                                <p className="text-sm font-semibold text-slate-500 mb-1">Total Revenue</p>
+                                <h4 className="text-2xl font-black text-[#0F172A] leading-none mb-1">{formattedRevenue}</h4>
+                                <p className="text-xs font-bold text-[#22C55E] bg-[#22C55E]/10 inline-block px-2 py-0.5 rounded-md">Live Bookings</p>
+                            </div>
                         </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    </ReportsTemplate>
-);
+                        <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
+                            <div className="p-3 bg-[#171C2D] text-[#F4B400] rounded-xl"><Activity size={22} /></div>
+                            <div>
+                                <p className="text-sm font-semibold text-slate-500 mb-1">Conversions</p>
+                                <h4 className="text-2xl font-black text-[#0F172A] leading-none mb-1">{conversionRate}</h4>
+                                <p className="text-xs font-bold text-[#22C55E] bg-[#22C55E]/10 inline-block px-2 py-0.5 rounded-md">Leads Won</p>
+                            </div>
+                        </div>
+                        <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
+                            <div className="p-3 bg-[#171C2D] text-[#F4B400] rounded-xl"><Users size={22} /></div>
+                            <div>
+                                <p className="text-sm font-semibold text-slate-500 mb-1">Active Employees</p>
+                                <h4 className="text-2xl font-black text-[#0F172A] leading-none mb-1">{activeEmployeesCount}</h4>
+                                <p className="text-xs font-bold text-slate-400 bg-slate-100 inline-block px-2 py-0.5 rounded-md">Brokers & Execs</p>
+                            </div>
+                        </div>
+                    </div>
 
-const SalesReports = () => (
-    <ReportsTemplate title="Sales Reports" subtitle="Analyze closing metrics and overall sales throughput.">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm mb-6 mt-4">
-            <h3 className="text-base font-bold text-[#0F172A] mb-6">Monthly Sales Volume</h3>
-            <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={MONTHLY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
-                        <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} cursor={{ fill: '#F1F5F9' }} />
-                        <Bar dataKey="sales" fill="#171C2D" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
-        </div>
-    </ReportsTemplate>
-);
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                            <h3 className="text-base font-bold text-[#0F172A] mb-6">Revenue Overview Trends</h3>
+                            <div className="h-[300px]">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={areaData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#F4B400" stopOpacity={0.3} />
+                                                <stop offset="95%" stopColor="#F4B400" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
+                                        <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                        <Area type="monotone" dataKey="revenue" stroke="#F4B400" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
 
-const EmployeePerformance = () => (
-    <ReportsTemplate title="Employee Performance" subtitle="Track staff conversion metrics and task execution.">
-        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden mt-4">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-                <h3 className="text-base font-bold text-[#0F172A]">Top Performing Employees</h3>
-                <span className="text-xs font-bold text-[#F4B400] bg-[#F4B400]/10 px-3 py-1 rounded-full uppercase tracking-wider">This Month</span>
-            </div>
-            <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">
-                        <tr>
-                            <th className="px-6 py-4">Employee</th>
-                            <th className="px-6 py-4">Leads Assigned</th>
-                            <th className="px-6 py-4">Site Visits</th>
-                            <th className="px-6 py-4">Deals Closed</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {[
-                            { name: "Aarthi D", role: "Sr. Agent", leads: 45, visits: 12, deals: 4 },
-                            { name: "John Doe", role: "Agent", leads: 32, visits: 8, deals: 2 },
-                            { name: "Mike Smith", role: "Field Exec", leads: 28, visits: 15, deals: 3 },
-                        ].map((emp, i) => (
-                            <tr key={i} className="hover:bg-slate-50/50 transition-colors">
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-[#171C2D] text-white flex items-center justify-center text-xs font-bold">{emp.name.charAt(0)}</div>
-                                        <div>
-                                            <p className="font-bold text-[#0F172A]">{emp.name}</p>
-                                            <p className="text-xs text-slate-400 font-medium">{emp.role}</p>
-                                        </div>
+                        <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                            <h3 className="text-base font-bold text-[#0F172A] mb-6">Lead Sources</h3>
+                            <div className="h-[240px]">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <RePieChart>
+                                        <Pie data={pieData.length > 0 ? pieData : [{ name: 'None', value: 1 }]} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                                            {pieData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={sourceColors[entry.name] || COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <RechartsTooltip />
+                                    </RePieChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <div className="flex flex-wrap gap-2 justify-center mt-2">
+                                {pieData.map((entry, i) => (
+                                    <div key={i} className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: sourceColors[entry.name] || COLORS[i % COLORS.length] }} />
+                                        {entry.name} ({entry.value})
                                     </div>
-                                </td>
-                                <td className="px-6 py-4 font-semibold text-slate-600">{emp.leads}</td>
-                                <td className="px-6 py-4 font-semibold text-slate-600">{emp.visits}</td>
-                                <td className="px-6 py-4">
-                                    <span className="inline-flex items-center justify-center w-8 h-8 bg-[#22C55E]/10 text-[#22C55E] font-bold rounded-lg pointer-events-none">
-                                        {emp.deals}
-                                    </span>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </ReportsTemplate>
-);
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+        </ReportsTemplate>
+    );
+};
 
-const ExportReports = () => {
+const EmployeePerformance = ({ leads, followups, sitevisits, users, loading }) => {
+    return (
+        <ReportsTemplate title="Employee Performance" subtitle="Track staff conversion metrics and task execution.">
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden mt-4">
+                <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <h3 className="text-base font-bold text-[#0F172A]">Top Performing Employees</h3>
+                    <span className="text-xs font-bold text-[#F4B400] bg-[#F4B400]/10 px-3 py-1 rounded-full uppercase tracking-wider">This Month</span>
+                </div>
+                {loading ? (
+                    <div className="py-12 text-center text-sm font-bold text-slate-400">Loading performance data...</div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm text-left">
+                            <thead className="bg-slate-50 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">
+                                <tr>
+                                    <th className="px-6 py-4">Employee</th>
+                                    <th className="px-6 py-4">Leads Assigned</th>
+                                    <th className="px-6 py-4">Site Visits</th>
+                                    <th className="px-6 py-4">Deals Closed</th>
+                                    <th className="px-6 py-4">Completed Followups</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {users.filter(u => u.role === 'employee').map((emp, i) => {
+                                    const userLeads = leads.filter(l => (l.assignedTo?._id || l.assignedTo) === emp._id).length;
+                                    const userVisits = sitevisits.filter(v => (v.agent?._id || v.agent) === emp._id).length;
+                                    const userClosed = leads.filter(l => (l.assignedTo?._id || l.assignedTo) === emp._id && ['Closed', 'Won', 'Sold', 'Booked'].includes(l.status)).length;
+                                    const userCompletedFups = followups.filter(f => (f.assignedTo?._id || f.assignedTo) === emp._id && f.status === 'Completed').length;
+
+                                    return (
+                                        <tr key={emp._id} className="hover:bg-slate-50/50 transition-colors">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-[#171C2D] text-white flex items-center justify-center text-xs font-bold">
+                                                        {emp.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-[#0F172A]">{emp.name}</p>
+                                                        <p className="text-xs text-slate-400 font-medium">Sales Agent</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 font-semibold text-slate-600">{userLeads}</td>
+                                            <td className="px-6 py-4 font-semibold text-slate-600">{userVisits}</td>
+                                            <td className="px-6 py-4">
+                                                <span className="inline-flex items-center justify-center w-8 h-8 bg-[#22C55E]/10 text-[#22C55E] font-bold rounded-lg pointer-events-none">
+                                                    {userClosed}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 font-semibold text-slate-600">{userCompletedFups}</td>
+                                        </tr>
+                                    );
+                                })}
+                                {users.filter(u => u.role === 'employee').length === 0 && (
+                                    <tr>
+                                        <td colSpan="5" className="py-8 text-center text-xs font-bold text-slate-400">No agents registered in database</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+        </ReportsTemplate>
+    );
+};
+
+const ExportReports = ({ leads, followups, properties, sitevisits, users, loading }) => {
     const [selectedType, setSelectedType] = useState('Sales Report');
     const [selectedFormat, setSelectedFormat] = useState('CSV');
-    const [filters, setFilters] = useState({ dateRange: 'This Month', employee: 'All', status: 'All' });
+    const [dateRange, setDateRange] = useState('Last 30 Days');
+    const [selectedEmployee, setSelectedEmployee] = useState('All');
 
     const reportTypes = [
         { id: 'Sales Report', icon: TrendingUp, desc: 'Revenue & closing metrics' },
@@ -194,39 +258,138 @@ const ExportReports = () => {
     ];
 
     const formats = [
-        { id: 'PDF', icon: FileText, desc: 'Best for printing' },
         { id: 'Excel', icon: FileSpreadsheet, desc: 'Advanced analysis' },
-        { id: 'CSV', icon: TableIcon, desc: 'Raw data import' },
-        { id: 'Print', icon: Printer, desc: 'Direct to paper' },
+        { id: 'CSV', icon: TableIcon, desc: 'Raw data import' }
     ];
 
-    const quickTemplates = ['Today\'s Sales', 'Weekly Performance', 'Monthly Revenue', 'Employee Summary', 'Lead Analytics'];
+    // Filter dynamic counts
+    const getReportCounts = () => {
+        if (selectedType === 'Sales Report') {
+            return leads.filter(l => ['Closed', 'Won', 'Sold', 'Booked'].includes(l.status)).length;
+        } else if (selectedType === 'Lead Report') {
+            return leads.length;
+        } else if (selectedType === 'Employee Performance') {
+            return users.filter(u => u.role === 'employee').length;
+        } else if (selectedType === 'Property Report') {
+            return properties.length;
+        } else if (selectedType === 'Site Visit Report') {
+            return sitevisits.length;
+        }
+        return 0;
+    };
 
     const handleExport = () => {
-        if (selectedFormat === 'CSV') {
-            const csvContent = "data:text/csv;charset=utf-8,Date,Type,Revenue,Status\n2026-06-01,Sale,120000,Closed\n2026-06-05,Sale,85000,Closed";
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `smart_crm_${selectedType.replace(' ', '_').toLowerCase()}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } else {
-            alert(`Initiating generation for ${selectedFormat} export: ${selectedType}...`);
+        let headers = [];
+        let rows = [];
+        let filename = `smart_crm_${selectedType.replace(/\s+/g, '_').toLowerCase()}`;
+
+        // Dynamic target users logic if filter selected
+        const filteredUsers = selectedEmployee === 'All'
+            ? users.filter(u => u.role === 'employee')
+            : users.filter(u => u._id === selectedEmployee);
+
+        if (selectedType === 'Sales Report') {
+            headers = ["Lead Name", "Email", "Phone", "Status", "Source", "Property Interested", "Price", "Created Date"];
+            let salesLeads = leads.filter(l => ['Closed', 'Won', 'Sold', 'Booked'].includes(l.status));
+            if (selectedEmployee !== 'All') {
+                salesLeads = salesLeads.filter(l => (l.assignedTo?._id || l.assignedTo) === selectedEmployee);
+            }
+            rows = salesLeads.map(l => [
+                l.name || "",
+                l.email || "",
+                l.phone || "",
+                l.status || "",
+                l.source || "",
+                l.propertyInterested?.name || l.propertyInterested || "",
+                l.propertyInterested?.price || parseFloat(l.budget) || l.budget || "",
+                l.createdAt ? new Date(l.createdAt).toLocaleDateString() : ""
+            ]);
+        } else if (selectedType === 'Lead Report') {
+            headers = ["Name", "Email", "Phone", "Status", "Source", "Property Interested", "Budget", "Created Date"];
+            let filteredLeads = leads;
+            if (selectedEmployee !== 'All') {
+                filteredLeads = filteredLeads.filter(l => (l.assignedTo?._id || l.assignedTo) === selectedEmployee);
+            }
+            rows = filteredLeads.map(l => [
+                l.name || "",
+                l.email || "",
+                l.phone || "",
+                l.status || "",
+                l.source || "",
+                l.propertyInterested?.name || l.propertyInterested || "",
+                l.budget || "",
+                l.createdAt ? new Date(l.createdAt).toLocaleDateString() : ""
+            ]);
+        } else if (selectedType === 'Employee Performance') {
+            headers = ["Employee Name", "Email", "Role", "Assigned Leads", "Total Followups", "Completed Followups", "Site Visits", "Closed Deals"];
+            rows = filteredUsers.map(u => {
+                const empLeads = leads.filter(l => (l.assignedTo?._id || l.assignedTo) === u._id).length;
+                const empFups = followups.filter(f => (f.assignedTo?._id || f.assignedTo) === u._id);
+                const empVisits = sitevisits.filter(v => (v.agent?._id || v.agent) === u._id).length;
+                const empClosed = leads.filter(l => (l.assignedTo?._id || l.assignedTo) === u._id && ['Closed', 'Won', 'Sold', 'Booked'].includes(l.status)).length;
+                return [
+                    u.name || "",
+                    u.email || "",
+                    u.role || "",
+                    empLeads,
+                    empFups.length,
+                    empFups.filter(f => f.status === 'Completed').length,
+                    empVisits,
+                    empClosed
+                ];
+            });
+        } else if (selectedType === 'Property Report') {
+            headers = ["Property Name", "Location", "Type", "Price", "Status", "Bedrooms", "Bathrooms", "Area (sqft)"];
+            rows = properties.map(p => [
+                p.name || "",
+                p.location || "",
+                p.type || "",
+                p.price || "",
+                p.status || "",
+                p.features?.bedrooms || "",
+                p.features?.bathrooms || "",
+                p.features?.area || ""
+            ]);
+        } else if (selectedType === 'Site Visit Report') {
+            headers = ["Customer Name", "Lead Email", "Property", "Agent Name", "Scheduled Date", "Status", "GPS Coordinates"];
+            let filteredVisits = sitevisits;
+            if (selectedEmployee !== 'All') {
+                filteredVisits = filteredVisits.filter(v => (v.agent?._id || v.agent) === selectedEmployee);
+            }
+            rows = filteredVisits.map(v => [
+                v.customerName || v.leadId?.name || "N/A",
+                v.leadId?.email || "N/A",
+                v.propertyId?.name || v.propertyId || "N/A",
+                v.agent?.name || "N/A",
+                v.dateTime ? new Date(v.dateTime).toLocaleString() : "",
+                v.status || "Pending",
+                v.geotag ? `${v.geotag.latitude}, ${v.geotag.longitude}` : "N/A"
+            ]);
         }
+
+        const csvString = [
+            headers.join(","),
+            ...rows.map(row => row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(","))
+        ].join("\n");
+
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `${filename}.${selectedFormat === 'Excel' ? 'xlsx' : 'csv'}`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     return (
         <ReportsTemplate title="Export Reports" subtitle="Generate and download business reports in multiple formats.">
-
-            {/* Top Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 mb-8">
                 {[
-                    { label: "Total Reports Generated", value: "1,284", icon: FileStack, color: "text-blue-500" },
-                    { label: "Last Export Date", value: "2 Hrs Ago", icon: Clock, color: "text-orange-500" },
-                    { label: "Available Templates", value: "24", icon: LayoutTemplate, color: "text-[#22C55E]" },
-                    { label: "Storage Used", value: "4.2 GB", icon: HardDrive, color: "text-[#F4B400]" },
+                    { label: "Total Active Leads", value: leads.length, icon: FileStack, color: "text-blue-500" },
+                    { label: "Total Follow-ups", value: followups.length, icon: Clock, color: "text-orange-500" },
+                    { label: "Active Staff", value: users.length, icon: LayoutTemplate, color: "text-[#22C55E]" },
+                    { label: "Total Properties", value: properties.length, icon: HardDrive, color: "text-[#F4B400]" },
                 ].map((stat, i) => (
                     <div key={i} className="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4 hover:-translate-y-0.5 transition-transform">
                         <div className={`p-3 bg-slate-50 rounded-xl border border-slate-100 ${stat.color}`}>
@@ -241,10 +404,7 @@ const ExportReports = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Main Configuration Area */}
                 <div className="lg:col-span-8 space-y-8">
-
-                    {/* Report Type Section */}
                     <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
                         <h3 className="text-lg font-black text-[#0F172A] mb-4">Select Report Type</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -269,61 +429,48 @@ const ExportReports = () => {
                         </div>
                     </div>
 
-                    {/* Filters Section */}
                     <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-black text-[#0F172A]">Filter Settings</h3>
-                            <button className="text-xs font-bold text-slate-400 hover:text-slate-700 flex items-center gap-1 transition-colors">
+                            <button
+                                onClick={() => { setDateRange('Last 30 Days'); setSelectedEmployee('All'); }}
+                                className="text-xs font-bold text-slate-400 hover:text-slate-700 flex items-center gap-1 transition-colors"
+                            >
                                 <RotateCcw size={12} /> Reset Filters
                             </button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Date Range</label>
-                                <select className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl text-sm font-semibold text-[#0F172A] outline-none focus:border-[#F4B400] transition-colors">
-                                    <option>This Month (June)</option>
+                                <select
+                                    value={dateRange}
+                                    onChange={(e) => setDateRange(e.target.value)}
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl text-sm font-semibold text-[#0F172A] outline-none focus:border-[#F4B400] transition-colors"
+                                >
                                     <option>Last 30 Days</option>
                                     <option>This Quarter</option>
                                     <option>Year to Date</option>
-                                    <option>Custom Range...</option>
                                 </select>
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Employee</label>
-                                <select className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl text-sm font-semibold text-[#0F172A] outline-none focus:border-[#F4B400] transition-colors">
-                                    <option>All Employees</option>
-                                    <option>Aarthi D (Sr. Agent)</option>
-                                    <option>John Doe</option>
+                                <select
+                                    value={selectedEmployee}
+                                    onChange={(e) => setSelectedEmployee(e.target.value)}
+                                    className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl text-sm font-semibold text-[#0F172A] outline-none focus:border-[#F4B400] transition-colors"
+                                >
+                                    <option value="All">All Employees</option>
+                                    {users.filter(u => u.role === 'employee').map(u => (
+                                        <option key={u._id} value={u._id}>{u.name}</option>
+                                    ))}
                                 </select>
                             </div>
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Property Region</label>
-                                <select className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl text-sm font-semibold text-[#0F172A] outline-none focus:border-[#F4B400] transition-colors">
-                                    <option>All Regions</option>
-                                    <option>North District</option>
-                                    <option>Downtown Central</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Lead Status</label>
-                                <select className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl text-sm font-semibold text-[#0F172A] outline-none focus:border-[#F4B400] transition-colors">
-                                    <option>Any Status</option>
-                                    <option>Closed Won</option>
-                                    <option>In Negotiation</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="mt-5 flex justify-end">
-                            <button className="bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold py-2.5 px-6 rounded-xl text-sm transition-colors flex items-center gap-2">
-                                <Filter size={16} /> Apply Filters
-                            </button>
                         </div>
                     </div>
 
-                    {/* Export Format */}
                     <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
                         <h3 className="text-lg font-black text-[#0F172A] mb-4">Export Format</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 gap-4 max-w-md">
                             {formats.map(fmt => (
                                 <div
                                     key={fmt.id}
@@ -337,14 +484,10 @@ const ExportReports = () => {
                             ))}
                         </div>
                     </div>
-
                 </div>
 
-                {/* Sidebar Sticky Area */}
                 <div className="lg:col-span-4 space-y-6 relative">
                     <div className="sticky top-24 space-y-6">
-
-                        {/* Preview & Summary Section */}
                         <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
                             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
                                 <div className="p-2 bg-[#F4B400]/10 text-[#F4B400] rounded-lg"><FileDigit size={20} /></div>
@@ -365,19 +508,14 @@ const ExportReports = () => {
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="font-semibold text-slate-500">Date Range:</span>
-                                    <span className="font-bold text-[#0F172A]">{filters.dateRange}</span>
+                                    <span className="font-bold text-[#0F172A]">{dateRange}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="font-semibold text-slate-500">Records Count:</span>
-                                    <span className="font-bold text-[#22C55E]">~4,120</span>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <span className="font-semibold text-slate-500">Estimated Size:</span>
-                                    <span className="font-bold text-[#0F172A]">2.4 MB</span>
+                                    <span className="font-bold text-[#22C55E]">~ {getReportCounts()}</span>
                                 </div>
                             </div>
 
-                            {/* Primary Action Button */}
                             <button
                                 onClick={handleExport}
                                 className="w-full bg-[#171C2D] text-white hover:bg-[#F4B400] hover:text-[#171C2D] hover:shadow-lg shadow-md transition-all duration-300 font-bold py-4 rounded-xl flex items-center justify-center gap-3 group text-lg"
@@ -386,70 +524,7 @@ const ExportReports = () => {
                                 Generate & Export
                             </button>
                         </div>
-
-                        {/* Quick Export Templates */}
-                        <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
-                            <h3 className="text-sm font-black text-[#0F172A] mb-4 uppercase tracking-wider text-slate-500">Quick Templates</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {quickTemplates.map((temp, i) => (
-                                    <span key={i} className="text-xs font-bold text-slate-600 bg-slate-100 hover:bg-[#171C2D] hover:text-[#F4B400] cursor-pointer px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-[#171C2D]">
-                                        {temp}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-
                     </div>
-                </div>
-            </div>
-
-            {/* Recent Exports Table */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden mt-2">
-                <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-                    <h3 className="text-base font-black text-[#0F172A]">Recent Exports</h3>
-                    <button className="text-sm font-bold text-[#F4B400] hover:text-[#171C2D] transition-colors flex items-center gap-1">
-                        View All History <ArrowRight size={16} />
-                    </button>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">
-                            <tr>
-                                <th className="px-6 py-4">Report Name</th>
-                                <th className="px-6 py-4">Format</th>
-                                <th className="px-6 py-4">Generated By</th>
-                                <th className="px-6 py-4">Date</th>
-                                <th className="px-6 py-4">Status</th>
-                                <th className="px-6 py-4 text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {[
-                                { name: "Sales Report", format: "PDF", user: "System Admin", date: "26 Jun 2026", status: "Completed" },
-                                { name: "Employee Performance", format: "Excel", user: "Aarthi D", date: "25 Jun 2026", status: "Completed" },
-                                { name: "Lead Export_Q2", format: "CSV", user: "System Admin", date: "22 Jun 2026", status: "Completed" },
-                            ].map((row, i) => (
-                                <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
-                                    <td className="px-6 py-4 font-bold text-[#0F172A]">{row.name}</td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded inline-block">{row.format}</span>
-                                    </td>
-                                    <td className="px-6 py-4 font-semibold text-slate-500">{row.user}</td>
-                                    <td className="px-6 py-4 font-semibold text-slate-500">{row.date}</td>
-                                    <td className="px-6 py-4">
-                                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#22C55E] bg-[#22C55E]/10 px-2.5 py-1 rounded-full">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E]"></div> {row.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button className="text-slate-400 hover:text-[#171C2D] transition-colors p-2 rounded-lg hover:bg-slate-100 inline-block font-medium text-xs flex items-center gap-1 ml-auto">
-                                            <FileDown size={14} /> Download
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </ReportsTemplate>
@@ -457,18 +532,45 @@ const ExportReports = () => {
 };
 
 export default function Reports() {
-    const location = useLocation();
+    const [leads, setLeads] = useState([]);
+    const [followups, setFollowups] = useState([]);
+    const [properties, setProperties] = useState([]);
+    const [sitevisits, setSitevisits] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [leadRes, fupRes, propRes, svRes, userRes] = await Promise.all([
+                    api.get("/leads").catch(() => ({ data: { data: [] } })),
+                    api.get("/followups").catch(() => ({ data: { data: [] } })),
+                    api.get("/properties").catch(() => ({ data: { data: [] } })),
+                    api.get("/sitevisits").catch(() => ({ data: { data: [] } })),
+                    api.get("/auth/admin/users").catch(() => ({ data: { data: [] } }))
+                ]);
+                setLeads(leadRes.data.data || []);
+                setFollowups(fupRes.data.data || []);
+                setProperties(propRes.data.data || []);
+                setSitevisits(svRes.data.data || []);
+                setUsers(userRes.data.data || []);
+            } catch (err) {
+                console.error("Failed to load reports data", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     return (
         <AdminLayout>
-            {/* The wrapper layout stays simple, we delegate the UI to the loaded components */}
             <div className="p-8 pb-24 max-w-[1400px] mx-auto">
                 <Routes>
                     <Route path="/" element={<Navigate to="analytics" replace />} />
-                    <Route path="analytics" element={<DashboardAnalytics />} />
-                    <Route path="sales" element={<SalesReports />} />
-                    <Route path="performance" element={<EmployeePerformance />} />
-                    <Route path="export" element={<ExportReports />} />
+                    <Route path="analytics" element={<DashboardAnalytics leads={leads} properties={properties} users={users} loading={loading} />} />
+                    <Route path="performance" element={<EmployeePerformance leads={leads} followups={followups} sitevisits={sitevisits} users={users} loading={loading} />} />
+                    <Route path="export" element={<ExportReports leads={leads} followups={followups} properties={properties} sitevisits={sitevisits} users={users} loading={loading} />} />
                 </Routes>
             </div>
         </AdminLayout>

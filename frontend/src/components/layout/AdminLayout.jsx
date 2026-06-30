@@ -27,7 +27,6 @@ const NAV = [
         id: "reports", label: "Reports", icon: BarChart3, group: "reports",
         subItems: [
             { id: "dashboard-analytics", label: "Dashboard Analytics", path: "/admin/reports/analytics" },
-            { id: "sales-reports", label: "Sales Reports", path: "/admin/reports/sales" },
             { id: "employee-performance", label: "Employee Performance", path: "/admin/reports/performance" },
             { id: "export-reports", label: "Export Reports", path: "/admin/reports/export" }
         ]

@@ -5,6 +5,12 @@ const asyncHandler = require("../middleware/asyncHandler");
 const mapFollowUpForFrontend = (fu) => {
     if (!fu) return fu;
     const f = fu.toObject ? fu.toObject() : fu;
+
+    // Fallback: copy leadId.assignedTo into assignedTo if missing to resolve employee analytics 0 analytics counts
+    if (!f.assignedTo && f.leadId && f.leadId.assignedTo) {
+        f.assignedTo = f.leadId.assignedTo;
+    }
+
     if (f.schedule) {
         const dateObj = new Date(f.schedule);
         f.followUpDate = f.followUpDate || dateObj.toISOString().slice(0, 10);

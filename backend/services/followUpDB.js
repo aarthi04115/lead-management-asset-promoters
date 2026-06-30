@@ -47,12 +47,10 @@ const syncOverdueStatuses = async () => {
     for (const f of allPendingOrOverdue) {
         const overdue = isOverdue(f);
         if (f.status === 'Pending' && overdue) {
-            f.status = 'Overdue';
-            await f.save();
+            await FollowUp.updateOne({ _id: f._id }, { $set: { status: 'Overdue' } });
             updatedCount++;
         } else if (f.status === 'Overdue' && !overdue) {
-            f.status = 'Pending';
-            await f.save();
+            await FollowUp.updateOne({ _id: f._id }, { $set: { status: 'Pending' } });
             updatedCount++;
         }
     }
@@ -61,7 +59,7 @@ const syncOverdueStatuses = async () => {
 
 const getAllFollowUps = async (baseQuery = {}) => {
     await syncOverdueStatuses();
-    const followUps = await FollowUp.find(baseQuery);
+    const followUps = await FollowUp.find(baseQuery).populate('assignedTo').populate({ path: 'leadId', populate: { path: 'assignedTo' } });
     return followUps.sort((a, b) => {
         const da = followUpDateTime(a);
         const db = followUpDateTime(b);
@@ -70,7 +68,7 @@ const getAllFollowUps = async (baseQuery = {}) => {
 };
 
 const getFollowUpById = async (id) => {
-    let doc = await FollowUp.findById(id);
+    let doc = await FollowUp.findById(id).populate('assignedTo').populate({ path: 'leadId', populate: { path: 'assignedTo' } });
     if (!doc && mongoose.isValidObjectId(id)) {
         const rawDoc = await FollowUp.collection.findOne({ _id: new mongoose.Types.ObjectId(id) });
         if (rawDoc) return new FollowUp(rawDoc, true);
@@ -79,7 +77,7 @@ const getFollowUpById = async (id) => {
 };
 
 const getLatestByCustomer = async (customerName, baseQuery = {}) => {
-    const customerFollowUps = await FollowUp.find({ customerName, ...baseQuery });
+    const customerFollowUps = await FollowUp.find({ customerName, ...baseQuery }).populate('assignedTo').populate({ path: 'leadId', populate: { path: 'assignedTo' } });
     if (customerFollowUps.length === 0) return null;
     customerFollowUps.sort((a, b) => {
         const da = followUpDateTime(a);
@@ -153,7 +151,7 @@ const getNextFollowUp = async (baseQuery = {}) => {
     const today = getKolkataToday();
     const currentTime = getKolkataTime();
 
-    const followUps = await FollowUp.find({ status: { $ne: 'Completed' }, ...baseQuery });
+    const followUps = await FollowUp.find({ status: { $ne: 'Completed' }, ...baseQuery }).populate('assignedTo').populate({ path: 'leadId', populate: { path: 'assignedTo' } });
     const upcoming = followUps
         .filter((f) =>
             f.followUpDate > today ||
@@ -243,6 +241,7 @@ const filterFollowUps = async (filters, baseQuery = {}) => {
 
     const followUpsRaw = await FollowUp.aggregate(pipeline);
     const followUps = followUpsRaw.map(doc => new FollowUp(doc, true));
+    await FollowUp.populate(followUps, [{ path: 'assignedTo' }, { path: 'leadId', populate: { path: 'assignedTo' } }]);
 
     return {
         data: followUps,
